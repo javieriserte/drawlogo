@@ -4,7 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -90,8 +95,9 @@ public abstract class LogoDrawer {
 		Font of = g.getFont();
 				
 		double advX = (int) g.getFontMetrics(of).stringWidth(c);
-		double advY = (int) g.getFontMetrics(of).getAscent() * ((500f-175f)/500f);
-//		double advY = (int) g.getFontMetrics(of).getAscent() ;
+		double advY = (int) g.getFontMetrics(of).getAscent() * ((500f-145f)/500f);
+		
+		
 		
 		AffineTransform at = new AffineTransform();
 		
@@ -99,11 +105,44 @@ public abstract class LogoDrawer {
 		
 		Font f = of.deriveFont(at);
 		
+		Shape gly = this.getTextShape(g, c, f);
+		
+		Rectangle2D r2d = gly.getBounds2D();
+		
+		double rh = r2d.getHeight();
+		double rw = r2d.getWidth();
+		
+		r2d.setRect(x, y-rh, rw, rh);
+
+		
+		
+		AffineTransform at2 = new AffineTransform();
+		at2.scale(1.1, 1);
+		
+		AffineTransform at3 = new AffineTransform();
+		at3.scale(1/1.1, 1);
+		
+		g.transform(at2);
+		
 		g.setFont(f);
 		g.setColor(color);
+		
+		g.draw(r2d);
+		
+		g.transform(at3);
+		
+		g.getTransform().setToIdentity();
+		
 		g.drawString(c, x, y);
 		
 		g.setFont(of);
 	
+		
+	}
+	
+	protected Shape getTextShape(Graphics2D g2d, String str, Font font) {
+	    FontRenderContext frc = g2d.getFontRenderContext();
+	    TextLayout tl = new TextLayout(str, font, frc);
+	    return tl.getOutline(null);
 	}
 }
