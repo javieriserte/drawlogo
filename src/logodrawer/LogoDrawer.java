@@ -3,6 +3,7 @@ package logodrawer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -27,6 +28,15 @@ public abstract class LogoDrawer {
 		
 		BufferedImage bi = new BufferedImage(numberOfPositions*posWidth,logoHeight,BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = bi.createGraphics();
+		
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		
+		
+
 		double maxBits =  Math.log(alphabetSize)/Math.log(2);
 
 		g.setColor(Color.white);
@@ -55,7 +65,6 @@ public abstract class LogoDrawer {
 				Font f = g.getFont();
 				f = f.deriveFont(10f);
 				g.setFont(f);
-				
 				this.drawChar(xleft, logoHeight-(int) ybottom, h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
 				
 				ybottom = ytop;
