@@ -2,7 +2,9 @@ package logodrawer;
 
 public class PositionValues {
 	private String listOfResidues;
-	private double[] Values;
+	private double[] frequencies;
+	private double observedEntropy;
+	
 	
 	///////////////
 	// Constructor
@@ -22,11 +24,11 @@ public class PositionValues {
 	
 	public void sortValues() {
 		StringBuilder newlistOfResidues = new StringBuilder();
-		double[] newValues = new double[Values.length];
+		double[] newValues = new double[frequencies.length];
 
-		for (int i=0;i<Values.length;i++) {
-			int p = this.getMinPos(Values);
-			newValues[i] = Values[p]; Values[p]=1;
+		for (int i=0;i<frequencies.length;i++) {
+			int p = this.getMinPos(frequencies);
+			newValues[i] = frequencies[p]; frequencies[p]=1;
 			newlistOfResidues.append(listOfResidues.charAt(p));
 		}
 		this.setListOfResidues(newlistOfResidues.toString());
@@ -52,7 +54,7 @@ public class PositionValues {
 			r.append('(');
 			r.append(listOfResidues.charAt(0));
 			r.append(',');
-			r.append(Values[0]);
+			r.append(frequencies[0]);
 			r.append(')');
 		for (int i=1; i<listOfResidues.length();i++) {
 			r.append(',');
@@ -60,7 +62,7 @@ public class PositionValues {
 			r.append('(');
 			r.append(listOfResidues.charAt(i));
 			r.append(',');
-			r.append(Values[i]);
+			r.append(frequencies[i]);
 			r.append(')');
 		}
 		r.append(']');
@@ -77,10 +79,17 @@ public class PositionValues {
 		this.listOfResidues = listOfResidues;
 	}
 	public double[] getValues() {
-		return Values;
+		return frequencies;
 	}
 	public void setValues(double[] values) {
-		Values = values;
+		frequencies = values;
+	}
+
+	public double getObservedEntropy() {
+		return this.observedEntropy;
+	}
+	public void setObservedEntropy(double so) {
+		this.observedEntropy = so;
 	}
 	
 	

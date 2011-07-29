@@ -1,14 +1,24 @@
 package logodrawer;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
 public class DnaLogoDrawer extends LogoDrawer{
 	
-	public void drawLogo(List<String> sequences) {
+	public void drawLogo(List<String> sequences) throws FileNotFoundException, IOException {
 		
 		LogoCalculator lc = new LogoCalculator();
-		System.out.println(lc.calculateValues(4, sequences ));
+		
+		List<PositionValues> calculateValues = lc.calculateValues(4, sequences );
+		System.out.println(calculateValues);
+		
+		BufferedImage createImage = this.createImage(calculateValues, new DnaColorStrategy(), 4);
+		
+		this.exportJPG( new File("c:\\logo.jpg"),  createImage);
 		
 	}
 	
@@ -30,7 +40,15 @@ public class DnaLogoDrawer extends LogoDrawer{
 		s.add("ACTGTG");
 		s.add("ACTGAG");
 		
-		dld.drawLogo(s);
+		try {
+			dld.drawLogo(s);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 }

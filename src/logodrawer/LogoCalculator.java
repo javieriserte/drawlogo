@@ -13,11 +13,14 @@ public class LogoCalculator {
 		
 		for (int i=0; i<frequencies.size();i++) {
 			double[] vs = frequencies.get(i).getValues();
+			double so = 0;
 			for (int j = 0; j < vs.length; j++) {
-				vs[j] = vs[j] * Math.log(vs[j])/Math.log(2); 
+				so = so + vs[j] * Math.log(vs[j])/Math.log(2); 
 			}
-			frequencies.get(i).setValues(vs);
-			frequencies.get(i).sortValues();  
+			
+			frequencies.get(i).sortValues();
+			frequencies.get(i).setObservedEntropy(so);
+			
 		}
 		return frequencies;
 	}
