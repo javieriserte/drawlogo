@@ -1,5 +1,6 @@
 package logodrawer;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -8,7 +9,7 @@ import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,37 +29,46 @@ public abstract class LogoDrawer {
 	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, int alphabetSize ) {
 		
 		int numberOfPositions = list.size();
+		int logoHeader = 50;
 		int logoHeight = 500;
+		int rowHeight = 600;
+		int rulerHeight = rowHeight - logoHeight; 
 		int posWidth = 80;
+		int rulerColumn = 100;
+		int positionsPerLine = 20;
+		int lines = 1 + (numberOfPositions-1) / positionsPerLine;
 		
-		BufferedImage bi = new BufferedImage(numberOfPositions*posWidth,logoHeight,BufferedImage.TYPE_INT_RGB);
+		int imageWidth = (lines==1 ? numberOfPositions:20)*posWidth+ rulerColumn;
+		int imageHeight = (rowHeight + logoHeader) * lines;
+		
+		BufferedImage bi = new BufferedImage(imageWidth , imageHeight ,BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = bi.createGraphics();
-		
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		
-		
-
-		double maxBits =  Math.log(alphabetSize)/Math.log(2);
-
 		g.setColor(Color.white);
-		g.fillRect(0, 0, numberOfPositions*posWidth, logoHeight);
-		
+		g.fillRect(0, 0, imageWidth, imageHeight);
 		g.setFont(new Font("Verdana", 0, 10));
 		
+//		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//		g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//		g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		
-		int xleft = 0;
+		double maxBits =  Math.log(alphabetSize)/Math.log(2);
+
+		
+		int xleft = 0 + rulerColumn;
+		
 		for (PositionValues positionValues : list) {
 			int xright = xleft+posWidth;
-			double ybottom = 0;
+			double ybottom = 0 ;
 			double observedEntropy = 0;
 			
 			observedEntropy = positionValues.getObservedEntropy();
+			
 			double rsec = maxBits + observedEntropy;
+			
 			for (int i=positionValues.getListOfResidues().length()-1; i>=0;i--) {
+				
 				double ytop = ybottom + (positionValues.getValues()[i]*logoHeight*rsec/maxBits);
 				
 				String c = String.valueOf(positionValues.getListOfResidues().charAt(i)); 
@@ -70,79 +80,163 @@ public abstract class LogoDrawer {
 				Font f = g.getFont();
 				f = f.deriveFont(10f);
 				g.setFont(f);
-				this.drawChar(xleft, logoHeight-(int) ybottom, h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
+				
+				this.drawChar(xleft, logoHeight - (int) ybottom + logoHeader, h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
 				
 				ybottom = ytop;
 			}
 			xleft = xright;
 		}
+		
+		int labelValues[] = new int[list.size()];
+		for (int i = 0; i < labelValues.length; i++) labelValues[i]=i; 
+		
+		this.drawHortizotalRuler(rulerColumn, rowHeight+ logoHeader,rulerHeight,labelValues,posWidth,4,20,Color.BLACK,new Font("Verdana", Font.BOLD, 60),g,5);
+		
+		this.drawVerticalRuler(logoHeight+ logoHeader,0+ logoHeader,new int[]{0,1,2},2,20,4,rulerColumn, Color.black, new Font("Verdana",Font.BOLD, 60), g);
 		return bi;
 	}
 	
+	/**
+	 * Creates a Jpg file from a given Buffered Image.
+	 * @param Outfile complete path of output jpg file. 
+	 * @param bi bufferedImage to be converted into a Jpeg file.
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	protected void 				exportJPG							(File outfile, BufferedImage bi) throws FileNotFoundException, IOException {
 		FileOutputStream out = new FileOutputStream(outfile);
+			// Creates an Output Stream for the speficied file.
 		JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+			// Set the outout Stream to the Jpg codec.
 		JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(bi);
-		param.setQuality(1.0f, false);
+			// Creates the encoder for the current image
+		param.setQuality(0.95f, false);
+			// Sets the quality of the image.
 		encoder.setJPEGEncodeParam(param);
+			// 
 		encoder.encode(bi);
 	}
 	
-	protected void drawChar(int x, int y, double height, double width, Color color, String c, Graphics2D g) {
-	
-		if(c.equals("I") ) c= " I ";
+	/**
+	 * Draws a String into a specified (x,y) position with the width and height given, with a particular color into a Graphics2D object.
+	 * 
+	 * @param x left position of String
+	 * @param y bottom position of the String
+	 * @param height string's height
+	 * @param width string's width
+	 * @param color string's color
+	 * @param c string text
+	 * @param g graphics2D object in which text will be rendered
+	 */
+	protected void 				drawChar							(int x, int y, double height, double width, Color color, String c, Graphics2D g) {
+		Font font = g.getFont();
+			// Get the font of the Graphics
 		
-		Font of = g.getFont();
-				
-		double advX = (int) g.getFontMetrics(of).stringWidth(c);
-		double advY = (int) g.getFontMetrics(of).getAscent() * ((500f-145f)/500f);
+//		font = new Font("comic sans ms",Font.BOLD,10);
+			// If you want another font
 		
-		
+		GeneralPath charPath = new GeneralPath(this.getTextShape(g, c, font));
+
+		Rectangle2D r2d = charPath.getBounds2D();		
+		double charPathWidth = r2d.getWidth(); 
+		double charPathHeight = r2d.getHeight();
+		double charPathLeft = r2d.getX();
+		double charPathUp = r2d.getY();
+			// Create a Shape (GeneralPath implements Shape interface) of the font.
 		
 		AffineTransform at = new AffineTransform();
-		
-		at.scale((double)width / (double)advX, (double)height / (double)advY );
-		
-		Font f = of.deriveFont(at);
-		
-		Shape gly = this.getTextShape(g, c, f);
-		
-		Rectangle2D r2d = gly.getBounds2D();
-		
-		double rh = r2d.getHeight();
-		double rw = r2d.getWidth();
-		
-		r2d.setRect(x, y-rh, rw, rh);
+			// Object to store transformations.
 
+		at.scale((double)width / (double)charPathWidth, (double)height / (double)charPathHeight );
+			// Scale transform, so the charPath has the width and height needed.
+
+		at.translate(-charPathLeft, -charPathUp);
+			// Translate transform to (0,0) positions (left,upper)
+
+		charPath = (GeneralPath) charPath.createTransformedShape(at);
+			// Creates a new path with the transformations applied
 		
+		at.setToIdentity();
+			// resets the object that stores transformations.
 		
-		AffineTransform at2 = new AffineTransform();
-		at2.scale(1.1, 1);
+		at.translate(x, y-height);
+			// Translate transform to the correct positions.
+
+		charPath = (GeneralPath) charPath.createTransformedShape(at);
+			// Creates a new path with the transformations applied
 		
-		AffineTransform at3 = new AffineTransform();
-		at3.scale(1/1.1, 1);
-		
-		g.transform(at2);
-		
-		g.setFont(f);
 		g.setColor(color);
+			// Set the color
 		
-		g.draw(r2d);
-		
-		g.transform(at3);
-		
-		g.getTransform().setToIdentity();
-		
-		g.drawString(c, x, y);
-		
-		g.setFont(of);
-	
-		
+		g.fill((Shape) charPath);
+			// Draws the Shape of the font.
 	}
 	
-	protected Shape getTextShape(Graphics2D g2d, String str, Font font) {
+	/**
+	 * Gets the shape of a string with a specified Font.
+	 * 
+	 * @param g2d a Graphics2D Object.
+	 * @param str String to be converted into a shape.
+	 * @param font Font which glyphs are used to construct the Shape Object
+	 * @return a Shape Object
+	 */
+	protected Shape 			getTextShape						(Graphics2D g2d, String str, Font font) {
 	    FontRenderContext frc = g2d.getFontRenderContext();
+	    	// Creates a FontRenderContext.
 	    TextLayout tl = new TextLayout(str, font, frc);
+	    	// Creates a text layout for the a given string, with a given font in a specified render context.
 	    return tl.getOutline(null);
+	    	// returns the path as a Shape
 	}
+	
+	protected void 				drawHortizotalRuler					(int left, int bottom, int rulerHeight, int values[], 
+			                                                         int widthPosition , int lineWidht, int markHeight, 
+			                                                         Color color, Font font, Graphics2D g, int bottomFontSpacer) {
+		
+		Color old = g.getColor();
+		g.setColor(color);
+		g.setStroke(new BasicStroke(lineWidht));
+		g.drawLine(left, bottom - rulerHeight, widthPosition*values.length + left, bottom - rulerHeight);
+		g.setFont(font);
+		
+		int fontHeight=0;
+		
+		fontHeight= g.getFontMetrics().getHeight();
+	
+		while (fontHeight > rulerHeight - markHeight - bottomFontSpacer) {
+			font = font.deriveFont((float)font.getSize()-1);
+			g.setFont(font);
+			fontHeight= g.getFontMetrics().getHeight();
+		}
+		
+		for (int i= 0;i<values.length; i++ ) {
+			g.drawLine(left + widthPosition * i + widthPosition/2, bottom - rulerHeight, left + widthPosition * i + widthPosition/2, bottom - rulerHeight + markHeight);
+			String strValue = String.valueOf(values[i]);	
+			int fontWidth = g.getFontMetrics().stringWidth(strValue);
+			g.drawString(strValue, left + widthPosition * i + widthPosition/2 - fontWidth/2, bottom - ( rulerHeight - markHeight - fontHeight)/2 - bottomFontSpacer);
+		}
+
+		g.setColor(old);
+		
+	}
+	
+	protected void drawVerticalRuler (int bottom ,int top, int values[], double maxValue, int markWidth, int lineWidht, int columnWidth, Color color, Font font, Graphics2D g ) {
+		
+		Color old = g.getColor();
+		g.setColor(color);
+		g.setStroke(new BasicStroke(lineWidht));
+		g.drawLine(columnWidth, bottom, columnWidth, top);
+		
+		for (int i=0;i<values.length;i++) {
+			int posY = (int) (bottom - (bottom-top) * values[i] / maxValue);
+			g.drawLine(columnWidth, posY, columnWidth-markWidth, posY);
+		}
+		
+		g.setFont(font);
+		
+		g.setColor(old);
+		
+	}
+	
 }
