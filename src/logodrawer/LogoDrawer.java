@@ -29,16 +29,18 @@ public abstract class LogoDrawer {
 	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, int alphabetSize ) {
 		
 		int numberOfPositions = list.size();
-		int logoHeader = 50;
-		int logoHeight = 500;
-		int rowHeight = 600;
+		int logoHeader = 20;
+		int logoHeight = 100;
+		int rowHeight = 120;
+		int rightSpacer = 10;
 		int rulerHeight = rowHeight - logoHeight; 
-		int posWidth = 80;
-		int rulerColumn = 100;
-		int positionsPerLine = 20;
+		int posWidth = 25;
+		int rulerColumn = 40;
+		int positionsPerLine = 5;
 		int lines = 1 + (numberOfPositions-1) / positionsPerLine;
 		
-		int imageWidth = (lines==1 ? numberOfPositions:20)*posWidth+ rulerColumn;
+		
+		int imageWidth = (lines==1 ? numberOfPositions:positionsPerLine)*posWidth+ rulerColumn+rightSpacer;
 		int imageHeight = (rowHeight + logoHeader) * lines;
 		
 		BufferedImage bi = new BufferedImage(imageWidth , imageHeight ,BufferedImage.TYPE_INT_RGB);
@@ -57,9 +59,11 @@ public abstract class LogoDrawer {
 
 		
 		int xleft = 0 + rulerColumn;
-		
+		int position = 0;
 		for (PositionValues positionValues : list) {
-			int xright = xleft+posWidth;
+			int xright = ((position+1) % positionsPerLine ) * posWidth + rulerColumn;
+			int line = position / positionsPerLine;
+//			int xright = xleft+posWidth;
 			double ybottom = 0 ;
 			double observedEntropy = 0;
 			
@@ -69,31 +73,28 @@ public abstract class LogoDrawer {
 			
 			for (int i=positionValues.getListOfResidues().length()-1; i>=0;i--) {
 				
-				double ytop = ybottom + (positionValues.getValues()[i]*logoHeight*rsec/maxBits);
+				double h = (positionValues.getValues()[i]*logoHeight*rsec/maxBits);
+				
+				double ytop = ybottom + h;
 				
 				String c = String.valueOf(positionValues.getListOfResidues().charAt(i)); 
 
-				int h = (int)(ytop-ybottom);
-				
 				g.setColor(Color.white);
-				
-				Font f = g.getFont();
-				f = f.deriveFont(10f);
-				g.setFont(f);
-				
-				this.drawChar(xleft, logoHeight - (int) ybottom + logoHeader, h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
+//				
+				this.drawChar(xleft, logoHeight - (int) ybottom + logoHeader + (line) * (logoHeader+rowHeight), h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
 				
 				ybottom = ytop;
 			}
 			xleft = xright;
+			position++;
 		}
 		
 		int labelValues[] = new int[list.size()];
 		for (int i = 0; i < labelValues.length; i++) labelValues[i]=i; 
 		
-		this.drawHortizotalRuler(rulerColumn, rowHeight+ logoHeader,rulerHeight,labelValues,posWidth,4,20,Color.BLACK,new Font("Verdana", Font.BOLD, 60),g,5);
+		this.drawHortizotalRuler(rulerColumn, rowHeight+ logoHeader,rulerHeight,labelValues,posWidth,2,4,Color.BLACK,new Font("Verdana", Font.BOLD, 10),g,5,positionsPerLine);
 		
-		this.drawVerticalRuler(logoHeight+ logoHeader,0+ logoHeader,new int[]{0,1,2},2,20,4,rulerColumn, Color.black, new Font("Verdana",Font.BOLD, 60), g);
+		this.drawVerticalRuler(logoHeight+ logoHeader,0+ logoHeader,new int[]{0,1,2},2,4,2,rulerColumn, Color.black, new Font("Verdana",Font.BOLD, 10), g);
 		return bi;
 	}
 	
@@ -192,7 +193,8 @@ public abstract class LogoDrawer {
 	
 	protected void 				drawHortizotalRuler					(int left, int bottom, int rulerHeight, int values[], 
 			                                                         int widthPosition , int lineWidht, int markHeight, 
-			                                                         Color color, Font font, Graphics2D g, int bottomFontSpacer) {
+			                                                         Color color, Font font, Graphics2D g, int bottomFontSpacer,
+			                                                         int positionsPerLine) {
 		
 		Color old = g.getColor();
 		g.setColor(color);
