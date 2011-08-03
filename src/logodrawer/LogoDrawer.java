@@ -334,7 +334,7 @@ public abstract class LogoDrawer {
 				// Gets the String to be printed
 			
 			this.drawCharEx(posX ,posY, TextDrawingLayout.Center,TextDrawingLayout.Center,0,0,color,strToPrint,g);
-				// draws the string
+				// draws the string into the Graphics2D
 		}
 
 		
