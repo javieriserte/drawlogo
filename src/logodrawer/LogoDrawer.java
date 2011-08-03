@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
@@ -25,83 +24,91 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 @SuppressWarnings("restriction")
 public abstract class LogoDrawer {
 	
-	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, int alphabetSize ) {
+	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, int alphabetSize, LogoImageLayout layout ) {
+
+		/////////////////////
+		// Sets up the layout
 		
-		int numberOfPositions = list.size();
-		int logoHeader = 8;
-		int logoHeight = 100;
-		int rowHeight = 120;
-		int rightSpacer = 10;
-		int rulerHeight = rowHeight - logoHeight; 
-		int posWidth = 25;
-		int rulerColumn = 15;
-		int positionsPerLine = 6;
-		int lines = 1 + (numberOfPositions-1) / positionsPerLine;
+		layout.setList(list);
+		layout.doLayout();
 		
+		//////////////////////
+		// Creates a new Image
+		BufferedImage bi = new BufferedImage(layout.getImageWidth() , layout.getImageHeight() ,BufferedImage.TYPE_INT_RGB);
 		
-		int imageWidth = (lines==1 ? numberOfPositions:positionsPerLine)*posWidth+ rulerColumn+rightSpacer;
-		int imageHeight = (rowHeight + logoHeader) * lines;
-		
-		BufferedImage bi = new BufferedImage(imageWidth , imageHeight ,BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = bi.createGraphics();
+		
 		g.setColor(Color.white);
-		g.fillRect(0, 0, imageWidth, imageHeight);
-		g.setFont(new Font("Verdana", 0, 10));
+		g.fillRect(0, 0, layout.getImageWidth(), layout.getImageHeight());
+		g.setRenderingHints(layout.getRenderingHints());
 		
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//		g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		
+		g.setFont(layout.getFont());
 		double maxBits =  Math.log(alphabetSize)/Math.log(2);
-
 		
-		int xleft = 0 + rulerColumn;
-		int position = 0;
-		for (PositionValues positionValues : list) {
-			int xright = ((position+1) % positionsPerLine ) * posWidth + rulerColumn;
-			int line = position / positionsPerLine;
-//			int xright = xleft+posWidth;
-			double ybottom = 0 ;
-			double observedEntropy = 0;
-			
-			observedEntropy = positionValues.getObservedEntropy();
-			
-			double rsec = maxBits + observedEntropy;
-			
-			for (int i=positionValues.getListOfResidues().length()-1; i>=0;i--) {
-				
-				double h = (positionValues.getValues()[i]*logoHeight*rsec/maxBits);
-				
-				double ytop = ybottom + h;
-				
-				String c = String.valueOf(positionValues.getListOfResidues().charAt(i)); 
-
-				g.setColor(Color.white);
-//				
-				
-//				this.drawChar(xleft, logoHeight - (int) ybottom + logoHeader + (line) * (logoHeader+rowHeight), h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
-				this.drawCharEx(xleft, logoHeight - (int) ybottom + logoHeader + (line) * (logoHeader+rowHeight), TextDrawingLayout.Left,TextDrawingLayout.Right, h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
-				
-				ybottom = ytop;
-			}
-			xleft = xright;
-			position++;
-		}
+		drawLogoChars(list, mycolor, layout.getLogoHeader(), layout.getLogoHeight(), layout.getRowHeight(),
+				layout.getPosWidth(), layout.getRulerColumn(), layout.getPositionsPerLine(), g, maxBits);
 		
 		int labelValues[] = new int[list.size()];
 		for (int i = 0; i < labelValues.length; i++) labelValues[i]=i; 
 		
-		for (int l = 0; l< lines;l++) {
+		for (int l = 0; l< layout.getLines();l++) {
 			
-			this.drawHortizotalRuler(rulerColumn, (rowHeight+ logoHeader)*(l+1),rulerHeight,labelValues,l*positionsPerLine ,Math.min((l+1)*positionsPerLine,numberOfPositions)-1,posWidth,2,4,Color.BLACK,new Font("Verdana", Font.BOLD, 10),g,5,positionsPerLine);
-			this.drawVerticalRuler((rowHeight+ logoHeader)*l + (logoHeight+ logoHeader), (rowHeight+ logoHeader)*l + logoHeader,new int[]{0,1,2},2,4,2,rulerColumn, Color.black, new Font("Verdana",Font.BOLD, 10), g);
+			this.drawHorizotalRuler(layout.getRulerColumn(), (layout.getRowHeight()+ layout.getLogoHeader())*(l+1),layout.getRulerHeight(),labelValues,l*layout.getPositionsPerLine() ,Math.min((l+1)*layout.getPositionsPerLine(),layout.getNumberOfPositions())-1,layout.getPosWidth(),2,4,Color.BLACK,new Font("Verdana", Font.BOLD, 10),g,layout.getPositionsPerLine());
+			this.drawVerticalRuler((layout.getRowHeight()+ layout.getLogoHeader())*l + (layout.getLogoHeight()+ layout.getLogoHeader()), (layout.getRowHeight()+ layout.getLogoHeader())*l + layout.getLogoHeader(),new int[]{0,1,2},2,4,2,layout.getRulerColumn(), Color.black, new Font("Verdana",Font.BOLD, 10), g);
 			
 		}
 
-		
 		return bi;
+	}
+
+	protected void 				drawLogoChars						(List<PositionValues> list, ColorStrategy mycolor, int logoHeader, 
+																	 int logoHeight, int rowHeight, int posWidth, int rulerColumn, 
+																	 int positionsPerLine, Graphics2D g, double maxBits) {
+		
+		int left = 0 + rulerColumn;
+			// sets the initial left position of the first logo in the Graphics2D
+		int position = 0;
+			// Starts in the first position
+		
+		for (PositionValues positionValues : list) {
+			// iterates over each column of the alignment
+			int right = ((position+1) % positionsPerLine ) * posWidth + rulerColumn;
+				// calculates the right position of each logo
+			int line = position / positionsPerLine;
+				// calculates the line in which the current logo will be printed
+
+			double bottom = 0 ;
+				// calculates the bottom position of each logo
+
+			double observedEntropy = positionValues.getObservedEntropy();
+				// calculates the entropy of the current column in the alignment
+			
+			double rsec = maxBits + observedEntropy;
+				// calculates the rsec value. That is like the height of the current column alignment 
+				// in the logo image 
+			
+			for (int i=positionValues.getListOfResidues().length()-1; i>=0;i--) {
+				// iterates over each character in the current column of the alignment
+				
+				double charHeight = (positionValues.getValues()[i]*logoHeight*rsec/maxBits);
+					// calculates the height of the current character in the current column 
+				
+				double top = bottom + charHeight;
+					// calculates the top location of the current character. 
+				
+				String c = String.valueOf(positionValues.getListOfResidues().charAt(i));
+					// gets the current string to be printed
+
+				this.drawCharEx(left, logoHeight - (int) bottom + logoHeader + (line) * (logoHeader+rowHeight), TextDrawingLayout.Left,TextDrawingLayout.Right, charHeight, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
+					// draws the current character
+				
+				bottom = top;
+			}
+			left = right;
+				// set the left position of the next column of the alignment
+			position++;
+				// advances one position in the alignment
+		}
 	}
 	
 	/**
@@ -128,66 +135,6 @@ public abstract class LogoDrawer {
 	/**
 	 * Draws a String into a specified (x,y) position with the width and height given, with a particular color into a Graphics2D object.
 	 * 
-	 * @param x left position of String
-	 * @param y bottom position of the String
-	 * @param height string's height
-	 * @param width string's width
-	 * @param color string's color
-	 * @param c string text
-	 * @param g graphics2D object in which text will be rendered
-	 */
-	protected void 				drawChar							(int x, int y, double height, double width, Color color, String c, Graphics2D g) {
-		Font font = g.getFont();
-			// Get the font of the Graphics
-		
-//		font = new Font("comic sans ms",Font.BOLD,10);
-			// If you want another font
-		
-		GeneralPath charPath = new GeneralPath(this.getTextShape(g, c, font));
-
-		Rectangle2D r2d = charPath.getBounds2D();		
-		double charPathWidth = r2d.getWidth(); 
-		double charPathHeight = r2d.getHeight();
-		double charPathLeft = r2d.getX();
-		double charPathUp = r2d.getY();
-			// Create a Shape (GeneralPath implements Shape interface) of the font.
-		
-		AffineTransform at = new AffineTransform();
-			// Object to store transformations.
-
-		
-		double scaleX = (double)width  / (double)charPathWidth  ;
-		double scaleY = (double)height / (double)charPathHeight ;
-		
-		at.scale(scaleX, scaleY);
-			// Scale transform, so the charPath has the width and height needed.
-
-		at.translate(-charPathLeft, -charPathUp);
-			// Translate transform to (0,0) positions (left,upper)
-
-		charPath = (GeneralPath) charPath.createTransformedShape(at);
-			// Creates a new path with the transformations applied
-		
-		at.setToIdentity();
-			// resets the object that stores transformations.
-		
-		at.translate(x, y-height);
-			// Translate transform to the correct positions.
-
-		charPath = (GeneralPath) charPath.createTransformedShape(at);
-			// Creates a new path with the transformations applied
-		
-		g.setColor(color);
-			// Set the color
-		
-		g.fill((Shape) charPath);
-			// Draws the Shape of the font.
-	}
-	
-	
-	/**
-	 * Draws a String into a specified (x,y) position with the width and height given, with a particular color into a Graphics2D object.
-	 * 
 	 * If both Weight and Height are Zero, means that Weight and Height will be of the size of the Font of Graphics2D object.
 	 * If one of them is Zero, then the size of the non-zero will be used and the other will be scaled according to the Graphics2D object   
 	 * 
@@ -207,17 +154,15 @@ public abstract class LogoDrawer {
 		Font font = g.getFont();
 			// Get the font of the Graphics
 		
-//		font = new Font("comic sans ms",Font.BOLD,10);
-			// If you want another font
-		
 		GeneralPath charPath = new GeneralPath(this.getTextShape(g, c, font));
-
+			// Create a Shape (GeneralPath implements Shape interface) of the font.
+	
 		Rectangle2D r2d = charPath.getBounds2D();		
 		double charPathWidth = r2d.getWidth(); 
 		double charPathHeight = r2d.getHeight();
 		double charPathLeft = r2d.getX();
 		double charPathUp = r2d.getY();
-			// Create a Shape (GeneralPath implements Shape interface) of the font.
+			// gets the coordinates of the font object
 		
 		AffineTransform at = new AffineTransform();
 			// Object to store transformations.
@@ -299,39 +244,47 @@ public abstract class LogoDrawer {
 	    	// returns the path as a Shape
 	}
 	
-	protected void 				drawHortizotalRuler					(int left, int bottom, int rulerHeight, int values[], int from, int to,
+	protected void 				drawHorizotalRuler					(int left, int bottom, int rulerHeight, int values[], int from, int to,
 			                                                         int widthPosition , int lineWidht, int markHeight, 
-			                                                         Color color, Font font, Graphics2D g, int bottomFontSpacer,
-			                                                         int positionsPerLine) {
+			                                                         Color color, Font font, Graphics2D g, int positionsPerLine) {
+		///////////////////
+		// Store old values
 		
 		Color oldColor = g.getColor();
+			// gets the original color
 		Font oldFont = g.getFont();
+			// gets the original font
+
+		
+		/////////////////////////////
+		// Setting Drawing Parameters
 		
 		g.setColor(color);
+			// sets the new color
 		g.setStroke(new BasicStroke(lineWidht));
+			// sets the new line width
 		g.setFont(font);
-		int fontHeight=0;		
-		fontHeight= g.getFontMetrics().getHeight();
+			// sets the new font
+
+		
+		/////////////////////
+		// Performing Drawing
 		
 		g.drawLine(left, bottom - rulerHeight, widthPosition*(to-from+1) + left, bottom - rulerHeight);
 			// Draws the horizontal Line
 	
-/*		while (fontHeight > rulerHeight - markHeight - bottomFontSpacer) {
-			font = font.deriveFont((float)font.getSize()-1);
-			g.setFont(font);
-			fontHeight= g.getFontMetrics().getHeight();
-		} // reduces the font size to fit into the ruler
-		*/
 		for (int i= from;i<=to; i++ ) {
 			g.drawLine(left + widthPosition * (i-from) + widthPosition/2, bottom - rulerHeight, left + widthPosition * (i-from) + widthPosition/2, bottom - rulerHeight + markHeight);
 				// Draws each vertical mark line
 			String strValue = String.valueOf(values[i]);
-//			int fontWidth = g.getFontMetrics().stringWidth(strValue);
-//			g.drawString(strValue, left + widthPosition * (i-from) + widthPosition/2 - fontWidth/2, bottom - ( rulerHeight - markHeight - fontHeight)/2 - bottomFontSpacer);
 			this.drawCharEx(left + widthPosition * (i-from) + widthPosition/2 , bottom - ( rulerHeight - markHeight)/2 , TextDrawingLayout.Center,TextDrawingLayout.Center,0,0,color,strValue,g);
 				// Draws the value of each mark 
 		}
 
+		
+		///////////////////////////
+		// Restore Original Values
+		
 		g.setColor(oldColor);
 			//restores the original color.
 		g.setFont(oldFont);
@@ -340,30 +293,58 @@ public abstract class LogoDrawer {
 		
 	}
 	
-	protected void drawVerticalRuler (int bottom ,int top, int values[], double maxValue, int markWidth, int lineWidht, int columnWidth, Color color, Font font, Graphics2D g ) {
+	protected void 				drawVerticalRuler 					(int bottom ,int top, int values[], double maxValue, int markWidth, int lineWidht, int columnWidth, Color color, Font font, Graphics2D g ) {
 		
+		///////////////////
+		// Store old values
+
 		Color oldColor = g.getColor();
+			// get the color of the Graphics2D object. 
 		Font oldFont = g.getFont();
+			// get the font of the Graphics2D object.		
 		
+		
+		/////////////////////////////
+		// Setting Drawing Parameters
+
 		g.setColor(color);
+			// sets the new color
 		g.setStroke(new BasicStroke(lineWidht));
-		g.drawLine(columnWidth, bottom, columnWidth, top);
-		
+			// sets the line width
 		g.setFont(font);
+			// sets the new font
+
+		
+		/////////////////////
+		// Performing Drawing
+
+		g.drawLine(columnWidth, bottom, columnWidth, top);
+			// draw the vertical axis.
 		
 		for (int i=0;i<values.length;i++) {
-			int posY = (int) (bottom - (bottom-top) * values[i] / maxValue);
+
+			int posY = (int) (bottom - (bottom-top) * values[i] / maxValue);			
+			int posX = (columnWidth - markWidth)/2;
+				// gets the coordinates used to print each label and mark
+
 			g.drawLine(columnWidth, posY, columnWidth-markWidth, posY);
-			
+				// Draws each horizontal mark
+		
 			String strToPrint = String.valueOf(values[i]);
-			int fontWidth = g.getFontMetrics().stringWidth(strToPrint);
-			int fontHeight = g.getFontMetrics().getHeight();
-			int pX = (columnWidth - markWidth)/2;
-			this.drawCharEx(pX ,posY, TextDrawingLayout.Center,TextDrawingLayout.Center,0,0,color,strToPrint,g);
-//			g.drawString(strToPrint,pX,posY);
+				// Gets the String to be printed
+			
+			this.drawCharEx(posX ,posY, TextDrawingLayout.Center,TextDrawingLayout.Center,0,0,color,strToPrint,g);
+				// draws the string
 		}
+
+		
+		///////////////////////////
+		// Restore Original Values
+		
 		g.setFont(oldFont);
+			// restores the original font
 		g.setColor(oldColor);
+			// restores the original color
 		
 	}
 	
