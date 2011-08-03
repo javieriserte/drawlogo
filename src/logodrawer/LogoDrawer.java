@@ -24,19 +24,18 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 @SuppressWarnings("restriction")
 public abstract class LogoDrawer {
-
 	
 	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, int alphabetSize ) {
 		
 		int numberOfPositions = list.size();
-		int logoHeader = 20;
+		int logoHeader = 8;
 		int logoHeight = 100;
 		int rowHeight = 120;
 		int rightSpacer = 10;
 		int rulerHeight = rowHeight - logoHeight; 
 		int posWidth = 25;
 		int rulerColumn = 15;
-		int positionsPerLine = 3;
+		int positionsPerLine = 6;
 		int lines = 1 + (numberOfPositions-1) / positionsPerLine;
 		
 		
@@ -49,7 +48,7 @@ public abstract class LogoDrawer {
 		g.fillRect(0, 0, imageWidth, imageHeight);
 		g.setFont(new Font("Verdana", 0, 10));
 		
-//		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 //		g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -81,7 +80,9 @@ public abstract class LogoDrawer {
 
 				g.setColor(Color.white);
 //				
-				this.drawChar(xleft, logoHeight - (int) ybottom + logoHeader + (line) * (logoHeader+rowHeight), h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
+				
+//				this.drawChar(xleft, logoHeight - (int) ybottom + logoHeader + (line) * (logoHeader+rowHeight), h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
+				this.drawCharEx(xleft, logoHeight - (int) ybottom + logoHeader + (line) * (logoHeader+rowHeight), TextDrawingLayout.Left,TextDrawingLayout.Right, h, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
 				
 				ybottom = ytop;
 			}
@@ -154,7 +155,11 @@ public abstract class LogoDrawer {
 		AffineTransform at = new AffineTransform();
 			// Object to store transformations.
 
-		at.scale((double)width / (double)charPathWidth, (double)height / (double)charPathHeight );
+		
+		double scaleX = (double)width  / (double)charPathWidth  ;
+		double scaleY = (double)height / (double)charPathHeight ;
+		
+		at.scale(scaleX, scaleY);
 			// Scale transform, so the charPath has the width and height needed.
 
 		at.translate(-charPathLeft, -charPathUp);
@@ -167,6 +172,104 @@ public abstract class LogoDrawer {
 			// resets the object that stores transformations.
 		
 		at.translate(x, y-height);
+			// Translate transform to the correct positions.
+
+		charPath = (GeneralPath) charPath.createTransformedShape(at);
+			// Creates a new path with the transformations applied
+		
+		g.setColor(color);
+			// Set the color
+		
+		g.fill((Shape) charPath);
+			// Draws the Shape of the font.
+	}
+	
+	
+	/**
+	 * Draws a String into a specified (x,y) position with the width and height given, with a particular color into a Graphics2D object.
+	 * 
+	 * If both Weight and Height are Zero, means that Weight and Height will be of the size of the Font of Graphics2D object.
+	 * If one of them is Zero, then the size of the non-zero will be used and the other will be scaled according to the Graphics2D object   
+	 * 
+	 * @param x horizontal position of String
+	 * @param y vertical position of the String
+	 * @param horizatalLayout horizontal alignment of the text in relation to x value.  
+	 * @param verticalLayout vertical alignment of the text in relation to y value.
+	 * @param height string's height.  
+	 * @param width string's width.
+	 * @param color string's color
+	 * @param c string text
+	 * @param g graphics2D object in which text will be rendered
+	 */
+	protected void 				drawCharEx							(int x, int y, TextDrawingLayout horizatalLayout, 
+			                                                         TextDrawingLayout verticalLayout,double height, 
+			                                                         double width, Color color, String c, Graphics2D g) {
+		Font font = g.getFont();
+			// Get the font of the Graphics
+		
+//		font = new Font("comic sans ms",Font.BOLD,10);
+			// If you want another font
+		
+		GeneralPath charPath = new GeneralPath(this.getTextShape(g, c, font));
+
+		Rectangle2D r2d = charPath.getBounds2D();		
+		double charPathWidth = r2d.getWidth(); 
+		double charPathHeight = r2d.getHeight();
+		double charPathLeft = r2d.getX();
+		double charPathUp = r2d.getY();
+			// Create a Shape (GeneralPath implements Shape interface) of the font.
+		
+		AffineTransform at = new AffineTransform();
+			// Object to store transformations.
+
+		double scaleX = 0;
+		double scaleY = 0;
+		if (width!=0 && height!=0) {
+			scaleX = (double)width  / (double)charPathWidth  ;
+			scaleY = (double)height / (double)charPathHeight ;
+		} else 
+		if (width!=0 && height == 0) {
+			scaleX = (double)width  / (double)charPathWidth  ;
+			scaleY = scaleX / (double)charPathHeight;
+		} else 
+		if (width==0 && height != 0) {
+			scaleY = (double)height / (double)charPathHeight;
+			scaleX = scaleY / (double)charPathWidth  ;
+		} else 
+		if (width==0 && height == 0) {
+			scaleY = 1; height = charPathHeight;
+			scaleX = 1; width = charPathWidth;
+		}		
+		
+		at.scale(scaleX, scaleY);
+			// Scale transform, so the charPath has the width and height needed.
+
+		at.translate(-charPathLeft, -charPathUp);
+			// Translate transform to (0,0) positions (left,upper)
+
+		charPath = (GeneralPath) charPath.createTransformedShape(at);
+			// Creates a new path with the transformations applied
+		
+		at.setToIdentity();
+			// resets the object that stores transformations.
+		
+		double tx =0; double ty = 0;
+		
+		switch (horizatalLayout) {
+			case Center: tx = x - charPath.getBounds2D().getWidth() /2; break;
+			case Right:  tx = x - charPath.getBounds2D().getWidth()   ; break;
+			case Left: 			
+			default:     tx = x                                       ; break;
+		} 
+		
+		switch (verticalLayout) {
+			case Center: ty = y-height + charPath.getBounds2D().getHeight() /2  ; break;
+			case Top:    ty = y;                                                ; break;
+			case Bottom: 
+			default:     ty = (y-height)                                        ; break;
+		}
+		
+		at.translate(tx, ty);
 			// Translate transform to the correct positions.
 
 		charPath = (GeneralPath) charPath.createTransformedShape(at);
@@ -223,8 +326,9 @@ public abstract class LogoDrawer {
 			g.drawLine(left + widthPosition * (i-from) + widthPosition/2, bottom - rulerHeight, left + widthPosition * (i-from) + widthPosition/2, bottom - rulerHeight + markHeight);
 				// Draws each vertical mark line
 			String strValue = String.valueOf(values[i]);
-			int fontWidth = g.getFontMetrics().stringWidth(strValue);
-			g.drawString(strValue, left + widthPosition * (i-from) + widthPosition/2 - fontWidth/2, bottom - ( rulerHeight - markHeight - fontHeight)/2 - bottomFontSpacer);
+//			int fontWidth = g.getFontMetrics().stringWidth(strValue);
+//			g.drawString(strValue, left + widthPosition * (i-from) + widthPosition/2 - fontWidth/2, bottom - ( rulerHeight - markHeight - fontHeight)/2 - bottomFontSpacer);
+			this.drawCharEx(left + widthPosition * (i-from) + widthPosition/2 , bottom - ( rulerHeight - markHeight)/2 , TextDrawingLayout.Center,TextDrawingLayout.Center,0,0,color,strValue,g);
 				// Draws the value of each mark 
 		}
 
@@ -254,10 +358,9 @@ public abstract class LogoDrawer {
 			String strToPrint = String.valueOf(values[i]);
 			int fontWidth = g.getFontMetrics().stringWidth(strToPrint);
 			int fontHeight = g.getFontMetrics().getHeight();
-			int pX = (columnWidth - markWidth - fontWidth)/2;
-			int pY = posY + fontHeight/2;
-			
-			g.drawString(strToPrint,pX,pY);
+			int pX = (columnWidth - markWidth)/2;
+			this.drawCharEx(pX ,posY, TextDrawingLayout.Center,TextDrawingLayout.Center,0,0,color,strToPrint,g);
+//			g.drawString(strToPrint,pX,posY);
 		}
 		g.setFont(oldFont);
 		g.setColor(oldColor);
