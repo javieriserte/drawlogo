@@ -4,7 +4,7 @@ import java.awt.Font;
 import java.awt.RenderingHints;
 import java.util.List;
 
-public class LogoImageLayout extends LogoDrawer {
+public class LogoImageLayout {
 
 	////////////////////////////
 	// Private Instance Variable

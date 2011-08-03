@@ -10,17 +10,24 @@ import java.util.List;
 import java.util.Vector;
 
 public class DnaLogoDrawer extends LogoDrawer{
-	
-	public void drawLogo(List<String> sequences, LogoImageLayout layout) throws FileNotFoundException, IOException {
+
+	public void drawLogo(List<String> sequences, LogoImageLayout layout)  {
 		
 		LogoCalculator lc = new LogoCalculator();
 		
 		List<PositionValues> calculateValues = lc.calculateValues(4, sequences );
-		System.out.println(calculateValues);
 		
-		BufferedImage createImage = this.createImage(calculateValues, new DnaColorStrategy(), 4,layout);
+		BufferedImage createImage = this.createImage(calculateValues, new DnaColorStrategy(),layout);
 		
-		this.exportJPG( new File("c:\\logo.jpg"),  createImage);
+		try {
+			this.exportJPG( new File("c:\\logo.jpg"),  createImage);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -60,18 +67,13 @@ public class DnaLogoDrawer extends LogoDrawer{
 		layout.setRenderingHints(renderingHints);
 		layout.setRowHeight(320);
 		layout.setRulerColumn(15);
+
+		dld.drawLogo(s,layout);
 		
-		
-		
-		try {
-			dld.drawLogo(s,layout);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+	}
+
+	@Override
+	public int getAlphabetSize() {
+		return 4;
 	}
 }

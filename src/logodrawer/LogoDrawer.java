@@ -23,8 +23,12 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 @SuppressWarnings("restriction")
 public abstract class LogoDrawer {
+
+	public abstract int getAlphabetSize();
 	
-	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, int alphabetSize, LogoImageLayout layout ) {
+	public abstract void drawLogo(List<String> sequences, LogoImageLayout layout);
+	
+	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, LogoImageLayout layout ) {
 
 		// Modified Version
 		
@@ -45,18 +49,23 @@ public abstract class LogoDrawer {
 		g.setRenderingHints(layout.getRenderingHints());
 		
 		g.setFont(layout.getFont());
-		double maxBits =  Math.log(alphabetSize)/Math.log(2);
+		double maxBits =  Math.log(this.getAlphabetSize())/Math.log(2);
 		
 		drawLogoChars(list, mycolor, layout.getLogoHeader(), layout.getLogoHeight(), layout.getRowHeight(),
 				layout.getPosWidth(), layout.getRulerColumn(), layout.getPositionsPerLine(), g, maxBits);
 		
 		int labelValues[] = new int[list.size()];
 		for (int i = 0; i < labelValues.length; i++) labelValues[i]=i; 
+
+		int[] verticalLabels = new int[(int) maxBits + 1];
+		for (int i = 0; i < verticalLabels.length; i++) {
+			verticalLabels[i]=i;
+		}
 		
 		for (int l = 0; l< layout.getLines();l++) {
-			
+
 			this.drawHorizotalRuler(layout.getRulerColumn(), (layout.getRowHeight()+ layout.getLogoHeader())*(l+1),layout.getRulerHeight(),labelValues,l*layout.getPositionsPerLine() ,Math.min((l+1)*layout.getPositionsPerLine(),layout.getNumberOfPositions())-1,layout.getPosWidth(),2,4,Color.BLACK,new Font("Verdana", Font.BOLD, 10),g,layout.getPositionsPerLine());
-			this.drawVerticalRuler((layout.getRowHeight()+ layout.getLogoHeader())*l + (layout.getLogoHeight()+ layout.getLogoHeader()), (layout.getRowHeight()+ layout.getLogoHeader())*l + layout.getLogoHeader(),new int[]{0,1,2},2,4,2,layout.getRulerColumn(), Color.black, new Font("Verdana",Font.BOLD, 10), g);
+			this.drawVerticalRuler((layout.getRowHeight()+ layout.getLogoHeader())*l + (layout.getLogoHeight()+ layout.getLogoHeader()), (layout.getRowHeight()+ layout.getLogoHeader())*l + layout.getLogoHeader(),verticalLabels,maxBits,4,2,layout.getRulerColumn(), Color.black, new Font("Verdana",Font.BOLD, 10), g);
 			
 		}
 
@@ -349,5 +358,7 @@ public abstract class LogoDrawer {
 			// restores the original color
 		
 	}
+	
+	
 	
 }
