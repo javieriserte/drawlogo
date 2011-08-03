@@ -26,6 +26,8 @@ public abstract class LogoDrawer {
 	
 	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, int alphabetSize, LogoImageLayout layout ) {
 
+		// Modified Version
+		
 		/////////////////////
 		// Sets up the layout
 		
