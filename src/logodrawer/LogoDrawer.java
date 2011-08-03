@@ -35,8 +35,8 @@ public abstract class LogoDrawer {
 		int rightSpacer = 10;
 		int rulerHeight = rowHeight - logoHeight; 
 		int posWidth = 25;
-		int rulerColumn = 40;
-		int positionsPerLine = 5;
+		int rulerColumn = 15;
+		int positionsPerLine = 3;
 		int lines = 1 + (numberOfPositions-1) / positionsPerLine;
 		
 		
@@ -92,9 +92,14 @@ public abstract class LogoDrawer {
 		int labelValues[] = new int[list.size()];
 		for (int i = 0; i < labelValues.length; i++) labelValues[i]=i; 
 		
-		this.drawHortizotalRuler(rulerColumn, rowHeight+ logoHeader,rulerHeight,labelValues,posWidth,2,4,Color.BLACK,new Font("Verdana", Font.BOLD, 10),g,5,positionsPerLine);
+		for (int l = 0; l< lines;l++) {
+			
+			this.drawHortizotalRuler(rulerColumn, (rowHeight+ logoHeader)*(l+1),rulerHeight,labelValues,l*positionsPerLine ,Math.min((l+1)*positionsPerLine,numberOfPositions)-1,posWidth,2,4,Color.BLACK,new Font("Verdana", Font.BOLD, 10),g,5,positionsPerLine);
+			this.drawVerticalRuler((rowHeight+ logoHeader)*l + (logoHeight+ logoHeader), (rowHeight+ logoHeader)*l + logoHeader,new int[]{0,1,2},2,4,2,rulerColumn, Color.black, new Font("Verdana",Font.BOLD, 10), g);
+			
+		}
+
 		
-		this.drawVerticalRuler(logoHeight+ logoHeader,0+ logoHeader,new int[]{0,1,2},2,4,2,rulerColumn, Color.black, new Font("Verdana",Font.BOLD, 10), g);
 		return bi;
 	}
 	
@@ -191,53 +196,71 @@ public abstract class LogoDrawer {
 	    	// returns the path as a Shape
 	}
 	
-	protected void 				drawHortizotalRuler					(int left, int bottom, int rulerHeight, int values[], 
+	protected void 				drawHortizotalRuler					(int left, int bottom, int rulerHeight, int values[], int from, int to,
 			                                                         int widthPosition , int lineWidht, int markHeight, 
 			                                                         Color color, Font font, Graphics2D g, int bottomFontSpacer,
 			                                                         int positionsPerLine) {
 		
-		Color old = g.getColor();
+		Color oldColor = g.getColor();
+		Font oldFont = g.getFont();
+		
 		g.setColor(color);
 		g.setStroke(new BasicStroke(lineWidht));
-		g.drawLine(left, bottom - rulerHeight, widthPosition*values.length + left, bottom - rulerHeight);
 		g.setFont(font);
-		
-		int fontHeight=0;
-		
+		int fontHeight=0;		
 		fontHeight= g.getFontMetrics().getHeight();
+		
+		g.drawLine(left, bottom - rulerHeight, widthPosition*(to-from+1) + left, bottom - rulerHeight);
+			// Draws the horizontal Line
 	
-		while (fontHeight > rulerHeight - markHeight - bottomFontSpacer) {
+/*		while (fontHeight > rulerHeight - markHeight - bottomFontSpacer) {
 			font = font.deriveFont((float)font.getSize()-1);
 			g.setFont(font);
 			fontHeight= g.getFontMetrics().getHeight();
-		}
-		
-		for (int i= 0;i<values.length; i++ ) {
-			g.drawLine(left + widthPosition * i + widthPosition/2, bottom - rulerHeight, left + widthPosition * i + widthPosition/2, bottom - rulerHeight + markHeight);
-			String strValue = String.valueOf(values[i]);	
+		} // reduces the font size to fit into the ruler
+		*/
+		for (int i= from;i<=to; i++ ) {
+			g.drawLine(left + widthPosition * (i-from) + widthPosition/2, bottom - rulerHeight, left + widthPosition * (i-from) + widthPosition/2, bottom - rulerHeight + markHeight);
+				// Draws each vertical mark line
+			String strValue = String.valueOf(values[i]);
 			int fontWidth = g.getFontMetrics().stringWidth(strValue);
-			g.drawString(strValue, left + widthPosition * i + widthPosition/2 - fontWidth/2, bottom - ( rulerHeight - markHeight - fontHeight)/2 - bottomFontSpacer);
+			g.drawString(strValue, left + widthPosition * (i-from) + widthPosition/2 - fontWidth/2, bottom - ( rulerHeight - markHeight - fontHeight)/2 - bottomFontSpacer);
+				// Draws the value of each mark 
 		}
 
-		g.setColor(old);
+		g.setColor(oldColor);
+			//restores the original color.
+		g.setFont(oldFont);
+			// restores the original font.
+		
 		
 	}
 	
 	protected void drawVerticalRuler (int bottom ,int top, int values[], double maxValue, int markWidth, int lineWidht, int columnWidth, Color color, Font font, Graphics2D g ) {
 		
-		Color old = g.getColor();
+		Color oldColor = g.getColor();
+		Font oldFont = g.getFont();
+		
 		g.setColor(color);
 		g.setStroke(new BasicStroke(lineWidht));
 		g.drawLine(columnWidth, bottom, columnWidth, top);
 		
+		g.setFont(font);
+		
 		for (int i=0;i<values.length;i++) {
 			int posY = (int) (bottom - (bottom-top) * values[i] / maxValue);
 			g.drawLine(columnWidth, posY, columnWidth-markWidth, posY);
+			
+			String strToPrint = String.valueOf(values[i]);
+			int fontWidth = g.getFontMetrics().stringWidth(strToPrint);
+			int fontHeight = g.getFontMetrics().getHeight();
+			int pX = (columnWidth - markWidth - fontWidth)/2;
+			int pY = posY + fontHeight/2;
+			
+			g.drawString(strToPrint,pX,pY);
 		}
-		
-		g.setFont(font);
-		
-		g.setColor(old);
+		g.setFont(oldFont);
+		g.setColor(oldColor);
 		
 	}
 	
