@@ -1,31 +1,19 @@
 package logodrawer.gui;
 
-import java.awt.Component;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicBorders;
-
-import sun.font.FontFamily;
 
 public class FontChooser extends javax.swing.JDialog {
 
@@ -52,7 +40,7 @@ public class FontChooser extends javax.swing.JDialog {
 	
 	//////////////////
 	// Main Executable
-	public static void main(String[] args) {
+	public static void 					main						(String[] args) {
 //		SwingUtilities.invokeLater(new Runnable() {
 //			public void run() {
 //				JFrame frame = new JFrame();
@@ -67,26 +55,29 @@ public class FontChooser extends javax.swing.JDialog {
 		System.out.println(FontChooser.openFontChooser());
 	}
 	
-	public static Font openFontChooser() {
-
+	///////////////////
+	// Public Interface
+	public static Font 					openFontChooser				() {
+		return openFontChooser("El murcielago hindú");
+	}
+	public static Font 					openFontChooser				(String sampleText) {
 		JFrame frame = new JFrame();
 		FontContainer f = new FontChooser.FontContainer();
-		FontChooser inst = new FontChooser(frame,f);
+		FontChooser inst = new FontChooser(frame,f,sampleText);
 		inst.setVisible(true);
 		inst.setModal(true);
+		frame.dispose();
 		return f.result;
-		
 	}
+	
+
+//	public FontChooser(JFrame frame, FontContainer result) {
+//		this(frame,result,"El murcielago hindú");
+//	}
 	
 	//////////////
 	// Constructor
-	public FontChooser(JFrame frame, FontContainer result) {
-		this(frame,result,"El murcielago hindú");
-	}
-	
-	//////////////
-	// Constructor
-	public FontChooser(JFrame frame, FontContainer result, String sampleText) {
+	private 							FontChooser					(JFrame frame, FontContainer result, String sampleText) {
 		super(frame);
 		this.result = result;
 		this.sampleText = sampleText;
@@ -94,21 +85,9 @@ public class FontChooser extends javax.swing.JDialog {
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
 	}
 	
-	
-	///////////////////
-	// Public Interface
-	public Font getCurrentFont() {
-		return currentFont;
-	}
-
-	public FontContainer getResult() {
-		return result;
-	}
-	
-	
 	//////////////////
 	// Private Methods
-	private void createGUI() {
+	private void 						createGUI					() {
 		try 
 		{
 			FontModificationListener fl = new FontModificationListener();
@@ -173,7 +152,15 @@ public class FontChooser extends javax.swing.JDialog {
 		
 	}
 	
-	private Font getFontFromSelectedValues() {
+	protected Font 						getCurrentFont				() {
+		return currentFont;
+	}
+
+	protected FontContainer 			getResult					() {
+		return result;
+	}
+	
+	private Font 						getFontFromSelectedValues	() {
 		String fontname = (String) jcbFontName.getSelectedItem();
 		int fontstyleIndex = jcbFontStyle.getSelectedIndex();
 		int fontStyle=0;
@@ -188,19 +175,19 @@ public class FontChooser extends javax.swing.JDialog {
 		return new Font(fontname, fontStyle, fontSize);
 	}
 
-	private String[] getSystemFontNames() {
+	private String[] 					getSystemFontNames			() {
 	    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	    return ge.getAvailableFontFamilyNames(); // Get the fonts
 	}
 	
-	private void redrawSampleText() {
+	private void 						redrawSampleText			() {
 		Font font = getFontFromSelectedValues();
 		jtpSampleText.setFont(font);
 	}
 	
 	//////////////////////////////////
 	// Auxiliary Classes And Listeners
-	class FontModificationListener  implements ActionListener, ChangeListener {
+	class 					FontModificationListener  			implements ActionListener, ChangeListener {
 
 		@Override
 		public void stateChanged(ChangeEvent e) {
@@ -214,7 +201,7 @@ public class FontChooser extends javax.swing.JDialog {
 		
 	}
 	
-	class OKButtonPressed implements ActionListener {
+	class 					OKButtonPressed 					implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -224,8 +211,7 @@ public class FontChooser extends javax.swing.JDialog {
 		
 	}
 	
-	
-	class CancelButtonPressed implements ActionListener {
+	class 					CancelButtonPressed 				implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -235,7 +221,7 @@ public class FontChooser extends javax.swing.JDialog {
 		
 	}
 	
-	public static class FontContainer {
+	public static class 	FontContainer {
 		Font result;
 	}
 	
