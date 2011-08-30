@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
@@ -42,7 +43,6 @@ public class FontChooser extends javax.swing.JDialog {
 	
 	/////////////
 	// Components
-	
 	private JComboBox jcbFontName;
 	private JComboBox jcbFontStyle;
 	private JSpinner  jsFontSize;
@@ -53,16 +53,29 @@ public class FontChooser extends javax.swing.JDialog {
 	//////////////////
 	// Main Executable
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				JFrame frame = new JFrame();
-				FontContainer f = new FontChooser.FontContainer();
-				FontChooser inst = new FontChooser(frame,f);
-				inst.setVisible(true);
-				inst.setModal(true);
-				System.out.println(f.result);
-			}
-		});
+//		SwingUtilities.invokeLater(new Runnable() {
+//			public void run() {
+//				JFrame frame = new JFrame();
+//				FontContainer f = new FontChooser.FontContainer();
+//				FontChooser inst = new FontChooser(frame,f);
+//				inst.setVisible(true);
+//				inst.setModal(true);
+//				System.out.println(f.result);
+//			}
+//		});
+		
+		System.out.println(FontChooser.openFontChooser());
+	}
+	
+	public static Font openFontChooser() {
+
+		JFrame frame = new JFrame();
+		FontContainer f = new FontChooser.FontContainer();
+		FontChooser inst = new FontChooser(frame,f);
+		inst.setVisible(true);
+		inst.setModal(true);
+		return f.result;
+		
 	}
 	
 	//////////////
@@ -100,7 +113,7 @@ public class FontChooser extends javax.swing.JDialog {
 		{
 			FontModificationListener fl = new FontModificationListener();
 			this.setLayout(null);
-			this.setSize(310, 150);
+			this.setSize(310, 180);
 			this.setResizable(false);
 			this.setTitle("Font Chooser");
 			
@@ -137,16 +150,17 @@ public class FontChooser extends javax.swing.JDialog {
 			jsFontSize.setSize(90,27);
 			jsFontSize.addChangeListener(fl);
 			
-			
 			this.currentFont = this.getFontFromSelectedValues();
+			
 			
 			jtpSampleText = new JTextArea(this.sampleText);
 			this.redrawSampleText();
-			jtpSampleText.setLocation(10, 75);
-			jtpSampleText.setSize(280,35);
-			jtpSampleText.setBorder(BasicBorders.getTextFieldBorder());
+			JScrollPane jspSampleText = new JScrollPane(jtpSampleText);
+			jspSampleText.setLocation(10, 75);
+			jspSampleText.setSize(280,65);
+			jspSampleText.setBorder(BasicBorders.getTextFieldBorder());
 			
-			this.add(jtpSampleText);
+			this.add(jspSampleText);
 			this.add(jsFontSize);
 			this.add(jcbFontStyle);
 			this.add(jbCancel);
@@ -186,7 +200,6 @@ public class FontChooser extends javax.swing.JDialog {
 	
 	//////////////////////////////////
 	// Auxiliary Classes And Listeners
-	
 	class FontModificationListener  implements ActionListener, ChangeListener {
 
 		@Override
