@@ -28,27 +28,21 @@ import sun.font.FontFamily;
 
 public class FontChooser extends javax.swing.JDialog {
 
+	private static final long serialVersionUID = 3364026494786435323L;
+
 	//////////////////////////
 	// Private Class Variables
-	private static String sampleText = "El murcielago hindú";
+	private String sampleText;
 	
 	/////////////////////////////
 	// Private Instance Variables
 	private Font currentFont;
-	private FontContainer result;
+	private FontContainer result; // FontContainer is an object to store the chosen font.
 	
 	
 	/////////////
 	// Components
 	
-	public Font getCurrentFont() {
-		return currentFont;
-	}
-
-	public FontContainer getResult() {
-		return result;
-	}
-
 	private JComboBox jcbFontName;
 	private JComboBox jcbFontStyle;
 	private JSpinner  jsFontSize;
@@ -69,16 +63,33 @@ public class FontChooser extends javax.swing.JDialog {
 				System.out.println(f.result);
 			}
 		});
-		
 	}
 	
 	//////////////
 	// Constructor
 	public FontChooser(JFrame frame, FontContainer result) {
+		this(frame,result,"El murcielago hindú");
+	}
+	
+	//////////////
+	// Constructor
+	public FontChooser(JFrame frame, FontContainer result, String sampleText) {
 		super(frame);
 		this.result = result;
+		this.sampleText = sampleText;
 		this.createGUI();
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
+	}
+	
+	
+	///////////////////
+	// Public Interface
+	public Font getCurrentFont() {
+		return currentFont;
+	}
+
+	public FontContainer getResult() {
+		return result;
 	}
 	
 	
@@ -89,7 +100,7 @@ public class FontChooser extends javax.swing.JDialog {
 		{
 			FontModificationListener fl = new FontModificationListener();
 			this.setLayout(null);
-			this.setSize(300, 150);
+			this.setSize(310, 150);
 			this.setResizable(false);
 			this.setTitle("Font Chooser");
 			
@@ -129,7 +140,7 @@ public class FontChooser extends javax.swing.JDialog {
 			
 			this.currentFont = this.getFontFromSelectedValues();
 			
-			jtpSampleText = new JTextArea(FontChooser.sampleText);
+			jtpSampleText = new JTextArea(this.sampleText);
 			this.redrawSampleText();
 			jtpSampleText.setLocation(10, 75);
 			jtpSampleText.setSize(280,35);
@@ -173,6 +184,7 @@ public class FontChooser extends javax.swing.JDialog {
 		jtpSampleText.setFont(font);
 	}
 	
+	//////////////////////////////////
 	// Auxiliary Classes And Listeners
 	
 	class FontModificationListener  implements ActionListener, ChangeListener {
@@ -180,13 +192,11 @@ public class FontChooser extends javax.swing.JDialog {
 		@Override
 		public void stateChanged(ChangeEvent e) {
 			redrawSampleText();
-			
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			redrawSampleText();
-			
 		}
 		
 	}
