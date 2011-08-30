@@ -32,8 +32,6 @@ public class OptionsPane extends JPanel {
 	JTextField fontName;
 	JTextField fontSize;
 	
-	
-	
 	//////////////
 	// Constructor
 	
