@@ -13,9 +13,6 @@ public class LogoViewPane extends JPanel {
 	
 //	private BufferedImage bi;
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3161799680762273792L;
 
 	///////////////////
