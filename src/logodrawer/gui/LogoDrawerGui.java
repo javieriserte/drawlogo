@@ -16,6 +16,7 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 	// Components
 	private LogoViewPane topPane;
 	private JPanel bottomPane;
+	private JSplitPane jspMain;
 	
 	///////////////
 	// Constructor
@@ -23,6 +24,7 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 	public LogoDrawerGui() {
 		this.createGUI();
 		this.pack();
+		jspMain.setDividerLocation((double)0.5);
 	}
 	
 	private void createGUI() {
@@ -37,7 +39,7 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 		bottomSPane.setViewportView(bottomPane);
 		
 		
-		JSplitPane jspMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT,topSPane,bottomSPane);
+		jspMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT,topSPane,bottomSPane);
 		
 //		jspMain.add(topSPane);
 //		jspMain.add(bottomSPane);
@@ -50,7 +52,6 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 		this.setSize(new Dimension(400, 300));
 		
 		jspMain.setDividerLocation(200);
-//		jspMain.setDividerLocation((double)0.5);
 		jspMain.setContinuousLayout(true);
 		
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
