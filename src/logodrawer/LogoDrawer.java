@@ -26,7 +26,7 @@ public abstract class LogoDrawer {
 
 	public abstract int getAlphabetSize();
 	
-	public abstract void drawLogo(List<String> sequences, LogoImageLayout layout);
+	public abstract BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout);
 	
 	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, LogoImageLayout layout ) {
 

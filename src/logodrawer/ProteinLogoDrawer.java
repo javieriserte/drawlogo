@@ -1,5 +1,6 @@
 package logodrawer;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class ProteinLogoDrawer extends LogoDrawer {
@@ -10,9 +11,8 @@ public class ProteinLogoDrawer extends LogoDrawer {
 	}
 
 	@Override
-	public void drawLogo(List<String> sequences, LogoImageLayout layout) {
-		// TODO Auto-generated method stub
-		
+	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout) {
+		return null;
 	}
 
 

@@ -11,23 +11,15 @@ import java.util.Vector;
 
 public class DnaLogoDrawer extends LogoDrawer{
 
-	public void drawLogo(List<String> sequences, LogoImageLayout layout)  {
+	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout)  {
 		
 		LogoCalculator lc = new LogoCalculator();
 		
 		List<PositionValues> calculateValues = lc.calculateValues(4, sequences );
 		
-		BufferedImage createImage = this.createImage(calculateValues, new DnaColorStrategy(),layout);
+		return this.createImage(calculateValues, new DnaColorStrategy(),layout);
 		
-		try {
-			this.exportJPG( new File("c:\\logo.jpg"),  createImage);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		
 	}
 	
@@ -68,7 +60,17 @@ public class DnaLogoDrawer extends LogoDrawer{
 		layout.setRowHeight(320);
 		layout.setRulerColumn(15);
 
-		dld.drawLogo(s,layout);
+		BufferedImage createImage = dld.drawLogo(s,layout);
+		
+		try {
+			dld.exportJPG( new File("c:\\logo.jpg"),  createImage);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
