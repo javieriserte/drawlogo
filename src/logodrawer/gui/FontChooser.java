@@ -181,8 +181,8 @@ public class FontChooser extends javax.swing.JDialog {
 	}
 	
 	private void 						redrawSampleText			() {
-		Font font = getFontFromSelectedValues();
-		jtpSampleText.setFont(font);
+		currentFont = getFontFromSelectedValues();
+		jtpSampleText.setFont(currentFont);
 	}
 	
 	//////////////////////////////////
