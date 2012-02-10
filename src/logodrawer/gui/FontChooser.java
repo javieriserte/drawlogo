@@ -21,7 +21,7 @@ public class FontChooser extends javax.swing.JDialog {
 
 	//////////////////////////
 	// Private Class Variables
-	private String sampleText;
+	private static String sampleText;
 	
 	/////////////////////////////
 	// Private Instance Variables
