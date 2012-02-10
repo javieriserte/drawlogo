@@ -6,17 +6,17 @@ import java.util.Vector;
 
 public class LogoCalculator {
 
-	public List<PositionValues> calculateValues(int elemInAlphabet, List<String> sequences) {
+	///////////////////
+	// Public Interface
+	
+	public List<PositionValues>                        calculateValues                 (int elemInAlphabet, List<String> sequences) {
 		int numberOfSequences = sequences.size();
 		
 		List<PositionValues> frequencies = calculateFrequencies(elemInAlphabet, sequences, numberOfSequences);
 		
 		for (int i=0; i<frequencies.size();i++) {
 			double[] vs = frequencies.get(i).getValues();
-			double so = 0;
-			for (int j = 0; j < vs.length; j++) {
-				so = so + vs[j] * Math.log(vs[j])/Math.log(2); 
-			}
+			double so = observedEntropyFromFrequencies(vs);
 			
 			frequencies.get(i).sortValues();
 			frequencies.get(i).setObservedEntropy(so);
@@ -25,49 +25,41 @@ public class LogoCalculator {
 		return frequencies;
 	}
 
-
+    //////////////////
 	// Private Methods
-	private List<PositionValues> calculateFrequencies(int elemInAlphabet, List<String> sequences, int numberOfSequences) {
+	
+	protected List<PositionValues>                     calculateFrequencies            (int numberOfElemInAlphabet, List<String> sequences, int numberOfSequences) {
 		List<PositionValues> positionValues = new Vector<PositionValues>();
 		
 		// Note: gaps are ignored!
 		
-		for (int i = 0; i<sequences.get(0).length();i++) {
+		int numberOfPositionsInSequence = sequences.get(0).length();
+		
+		for (int i = 0; i<numberOfPositionsInSequence;i++) {
 			// iterate over positions
 			
-			double[] freqsInSeq = new double[elemInAlphabet];
-			for (int j=0;j<freqsInSeq.length;j++) freqsInSeq[j]=0;
+			int gapCount = 0;
 			
-			char[] alphabet = new char[elemInAlphabet];
-			for (int j=0;j<alphabet.length;j++) alphabet[j]=' ';
-			
-			for (int j=0; j<numberOfSequences; j++ ) {
-				// iterate over sequences
+			double[] freqsInSeq = new double[numberOfElemInAlphabet];
 
-				char c = sequences.get(j).charAt(i);
-				
-				for (int k=0;k<alphabet.length;k++) {
-					if (' ' == alphabet[k]) alphabet[k] = c; 
-					if (c==alphabet[k]) {
-							freqsInSeq[k]++;
-							k = alphabet.length;
-					}
-				}
-			}
+			char[] alphabet = new char[numberOfElemInAlphabet];
 			
-			for (int j=0;j<freqsInSeq.length;j++) freqsInSeq[j]=freqsInSeq[j]/numberOfSequences;
+			for (int j=0;j<numberOfElemInAlphabet;j++) freqsInSeq[j]=0;
+			
+			for (int j=0;j<numberOfElemInAlphabet;j++) alphabet[j] = ' ';
+			
+			gapCount = absoluteCountOfChars(sequences, numberOfSequences, i,
+					gapCount, freqsInSeq, alphabet);
+			
+			absoluteCountsToFrequencies(numberOfSequences, freqsInSeq, gapCount, false);
 				// Convert AbsoluteNumbers to frequencies
 			
 			StringBuilder r = new StringBuilder();
 			List<Double> f = new Vector<Double>();			
 
-			for (int j=0;j<freqsInSeq.length;j++) {
+			removeUnusedCharacters(freqsInSeq, alphabet, r, f);
 				// Eliminate values that do not appear in the sequences
-				if (freqsInSeq[j]!=0) {
-					r.append(alphabet[j]);
-					f.add(freqsInSeq[j]);
-				}
-			}
+			
 			double[] fa = new double[f.size()];
 			for (int j = 0; j < fa.length; j++) {fa[j] = (double) f.get(j);}
 			PositionValues pv = new PositionValues(r.toString(), fa);
@@ -75,6 +67,71 @@ public class LogoCalculator {
 		}
 		
 		return positionValues; 
+	}
+
+	protected int absoluteCountOfChars(List<String> sequences,
+			int numberOfSequences, int i, int gapCount, double[] freqsInSeq,
+			char[] alphabet) {
+		for (int j=0; j<numberOfSequences; j++ ) {
+			// iterate over sequences
+
+			char c = sequences.get(j).charAt(i);
+			
+			if (!(isGap(c))) {
+				countCharInFrequencies(freqsInSeq, alphabet, c);
+			} else {
+				gapCount++;
+			}
+			
+		}
+		return gapCount;
+	}
+
+	protected void removeUnusedCharacters(double[] freqsInSeq, char[] alphabet,
+			StringBuilder r, List<Double> f) {
+		for (int j=0;j<freqsInSeq.length;j++) {
+
+			if (freqsInSeq[j]!=0) {
+				r.append(alphabet[j]);
+				f.add(freqsInSeq[j]);
+			}
+		}
+	}
+
+	protected void absoluteCountsToFrequencies(int numberOfSequences,
+			double[] freqsInSeq, int gapCount, boolean countGaps) {
+		
+		int gaps = 0;
+		if (countGaps) gaps = gapCount;
+		
+		for (int j=0;j<freqsInSeq.length;j++) freqsInSeq[j]=freqsInSeq[j]/(numberOfSequences-gaps);
+
+	}
+
+	protected void countCharInFrequencies(double[] freqsInSeq, char[] alphabet, char c) {
+		for (int k=0;k<alphabet.length;k++) {
+			if (isSpace(alphabet[k])) alphabet[k] = c; 
+			if (c==alphabet[k]) {
+				freqsInSeq[k]++;
+				k = alphabet.length;
+			}
+		}
+	}
+
+	protected double observedEntropyFromFrequencies(double[] vs) {
+		double so = 0;
+		for (int j = 0; j < vs.length; j++) {
+			so = so + vs[j] * Math.log(vs[j])/Math.log(2); 
+		}
+		return so;
+	}
+	
+	protected boolean isGap(char c) {
+		return '-'==c;
+	}
+	
+	protected boolean isSpace(char c) {
+		return ' '==c;
 	}
 	
 }
