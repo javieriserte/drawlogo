@@ -11,18 +11,7 @@ import java.util.Vector;
 
 public class DnaLogoDrawer extends LogoDrawer{
 
-	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout)  {
-		
-		LogoCalculator lc = new LogoCalculator();
-		
-		List<PositionValues> calculateValues = lc.calculateValues(4, sequences );
-		
-		return this.createImage(calculateValues, new DnaColorStrategy(),layout);
-		
 
-		
-	}
-	
 	///////////////////
 	// Executable Main
 	
@@ -77,5 +66,10 @@ public class DnaLogoDrawer extends LogoDrawer{
 	@Override
 	public int getAlphabetSize() {
 		return 4;
+	}
+
+	@Override
+	public ColorStrategy getColorStrategy() {
+		return new DnaColorStrategy();
 	}
 }

@@ -48,8 +48,7 @@ public class LogoCalculator {
 			
 			for (int j=0;j<numberOfElemInAlphabet;j++) alphabet[j] = ' ';
 			
-			gapCount = absoluteCountOfChars(sequences, numberOfSequences, i,
-					gapCount, freqsInSeq, alphabet);
+			gapCount = absoluteCountOfChars(sequences, numberOfSequences, i, gapCount, freqsInSeq, alphabet);
 			
 			absoluteCountsToFrequencies(numberOfSequences, freqsInSeq, gapCount, false);
 				// Convert AbsoluteNumbers to frequencies

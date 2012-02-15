@@ -25,8 +25,18 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 public abstract class LogoDrawer {
 
 	public abstract int getAlphabetSize();
+	public abstract ColorStrategy getColorStrategy();
 	
-	public abstract BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout);
+	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout)  {
+		
+		LogoCalculator lc = new LogoCalculator();
+		
+		List<PositionValues> calculateValues = lc.calculateValues(this.getAlphabetSize(), sequences );
+		
+		return this.createImage(calculateValues, this.getColorStrategy(),layout);
+		
+	}
+	
 	
 	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, LogoImageLayout layout ) {
 
