@@ -77,7 +77,6 @@ public class OptionsPane extends JPanel {
 	}
 	
 	public File getFile() {
-		System.out.println(this.selectedFile);
 		return this.selectedFile;
 	}
 	
@@ -279,21 +278,19 @@ public class OptionsPane extends JPanel {
 			}; 
 				// Creates a filter to choose only fasta files.
 			
-			JFileChooser iFile = new JFileChooser(System.getProperty("user.dir"));
-				// Open a Dialog Box for to load a fasta file.
 
 			
+//			JFileChooser iFile = new JFileChooser(new java.io.File( "." ));
+			JFileChooser iFile = new JFileChooser();
 			
 			iFile.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			iFile.setMultiSelectionEnabled(false);
 			iFile.setDialogTitle("Select Fasta Alignment");
 			iFile.setDialogType(JFileChooser.OPEN_DIALOG);
-			iFile.setCurrentDirectory(new java.io.File( "." ));
 			iFile.setFileFilter(fastaFilter);
 			iFile.showOpenDialog(OptionsPane.this);
 
 			OptionsPane.this.selectedFile = iFile.getSelectedFile();
-			System.out.println(OptionsPane.this.selectedFile);
 
 			OptionsPane.this.jlFileSelected.setText(OptionsPane.this.selectedFile.getName());
 
