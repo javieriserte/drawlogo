@@ -8,7 +8,9 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -19,7 +21,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.metal.MetalBorders.OptionDialogBorder;
 
 import fastaIO.FastaFilter;
+import fastaIO.FastaMultipleReader;
+import fastaIO.Pair;
 
+import logodrawer.DetectType;
 import logodrawer.LogoImageLayout;
 import logodrawer.PositionValues;
 
@@ -108,8 +113,57 @@ public class OptionsPane extends JPanel {
 		return (int) Integer.parseInt(this.txtPositionsPerLine.getText());
 	}
 	
-	//////////////////
-	// Private Methods
+	///////////////////////////////
+	// Private & Protected Methods
+
+	protected void selectFile(File file, boolean autodetectType) {
+		if (file!=null && file.exists()) {
+			this.setSelectedFile(file);
+			this.jlFileSelected.setText(file.getName());
+			
+			FastaMultipleReader fmr = new FastaMultipleReader();
+				
+			List<Pair<String, String>> seqs = null;
+				
+			try {
+				seqs = fmr.readFile( file);
+			} catch (FileNotFoundException e) {
+				System.err.println("Error While Processing Fasta File\n");
+				return;
+			}
+		
+			List<String> s = new Vector<String>();
+				
+			for (Pair<String, String> pair : seqs) {
+					
+				s.add(pair.getSecond());
+					
+			}
+			
+			parent.setSequences(s);
+			
+			if (autodetectType) {
+				System.out.println(DetectType.isProtein(s.get(0)));
+				if (DetectType.isProtein(s.get(0))) {
+					parent.selectLogoDrawer(MoleculeType.Protein);
+				} else {
+					parent.selectLogoDrawer(MoleculeType.DNA);
+				}
+			}
+			
+//			DnaLogoDrawer dld = new DnaLogoDrawer();//
+//			
+			
+		}
+	}
+	
+	private Font getSelectedFont() {
+		return this.selectedFont;
+	}
+	
+	private void setSelectedFile(File file) {
+		this.selectedFile = file;
+	}
 	
 	private void CreateGUI() {
 		GridBagLayout layout = new GridBagLayout();
@@ -243,9 +297,6 @@ public class OptionsPane extends JPanel {
 		return rightPane;
 	}
 
-	private Font getSelectedFont() {
-		return this.selectedFont;
-	}
 	
 	//////////////////////////
 	// Auxiliary Classes
@@ -280,8 +331,7 @@ public class OptionsPane extends JPanel {
 			
 
 			
-//			JFileChooser iFile = new JFileChooser(new java.io.File( "." ));
-			JFileChooser iFile = new JFileChooser();
+			JFileChooser iFile = new JFileChooser(new java.io.File( "." ));
 			
 			iFile.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			iFile.setMultiSelectionEnabled(false);
@@ -290,9 +340,7 @@ public class OptionsPane extends JPanel {
 			iFile.setFileFilter(fastaFilter);
 			iFile.showOpenDialog(OptionsPane.this);
 
-			OptionsPane.this.selectedFile = iFile.getSelectedFile();
-
-			OptionsPane.this.jlFileSelected.setText(OptionsPane.this.selectedFile.getName());
+			OptionsPane.this.selectFile(iFile.getSelectedFile(), true);
 
 		}
 		

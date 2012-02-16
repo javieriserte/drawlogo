@@ -17,7 +17,9 @@ import fastaIO.FastaMultipleReader;
 import fastaIO.Pair;
 
 import logodrawer.DnaLogoDrawer;
+import logodrawer.LogoDrawer;
 import logodrawer.LogoImageLayout;
+import logodrawer.ProteinLogoDrawer;
 
 public class LogoDrawerGui extends javax.swing.JFrame{
 	
@@ -26,7 +28,9 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 	
 	/////////////////////
 	// Instance Variables
-	
+
+	private List<String> sequences=null;
+	private LogoDrawer drawer= null;
 
 	/////////////
 	// Components
@@ -42,6 +46,17 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 		this.pack();
 		jspMain.setDividerLocation((double)0.5);
 	}
+
+	//////////////////
+	// Public Methods
+
+	public void setSequences(List<String> sequences) {
+		this.sequences = sequences;
+	}
+	
+	
+	//////////////////
+	// Private Methods
 	
 	private void createGUI() {
 		
@@ -72,27 +87,6 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 	}
 	
 	protected void drawLogo() {
-		DnaLogoDrawer dld = new DnaLogoDrawer();
-		
-		
-		FastaMultipleReader fmr = new FastaMultipleReader();
-		
-		List<Pair<String, String>> seqs = null;
-		
-		try {
-			seqs = fmr.readFile( bottomPane.getFile());
-		} catch (FileNotFoundException e) {
-			System.err.println("Error While Processing Fasta File\n");
-			return;
-		}
-
-		List<String> s = new Vector<String>();
-		
-		for (Pair<String, String> pair : seqs) {
-			
-			s.add(pair.getSecond());
-			
-		}
 
 		RenderingHints renderingHints = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		renderingHints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
@@ -110,9 +104,17 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 		layout.setRowHeight(bottomPane.getRowHeightSize());
 		layout.setRulerColumn(bottomPane.getRulerColumnSize());
 
-		topPane.setBi(dld.drawLogo(s,layout));
+		topPane.setBi(this.drawer.drawLogo(this.sequences,layout));
 		
 		
+	}
+	
+	public void selectLogoDrawer(MoleculeType type) {
+		if (type == MoleculeType.DNA) {
+			this.drawer = new DnaLogoDrawer();  
+		} else {
+			this.drawer = new ProteinLogoDrawer();
+		}
 	}
 	
 	//////////////////
@@ -127,6 +129,8 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 			}
 		});
 	}
+
+
 	
 	
 	

@@ -40,8 +40,6 @@ public abstract class LogoDrawer {
 	
 	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, LogoImageLayout layout ) {
 
-		//////////////////////////
-		// Modified Version - 
 		
 		/////////////////////
 		// Sets up the layout
@@ -121,8 +119,14 @@ public abstract class LogoDrawer {
 				String c = String.valueOf(positionValues.getListOfResidues().charAt(i));
 					// gets the current string to be printed
 
-				this.drawCharEx(left, logoHeight - (int) bottom + logoHeader + (line) * (logoHeader+rowHeight), TextDrawingLayout.Left,TextDrawingLayout.Right, charHeight, posWidth, mycolor.getColor(positionValues.getListOfResidues().charAt(i)), c, g);
+				
+				if (!c.equals("I")) { // Corrects the 'I' width glitch 
+					this.drawCharEx(left, logoHeight - (int) bottom + logoHeader + (line) * (logoHeader+rowHeight), TextDrawingLayout.Left,TextDrawingLayout.Right, charHeight, posWidth, mycolor.getColor(c.charAt(0)), c, g);
 					// draws the current character
+				} else {
+					this.drawCharEx(left + posWidth*3/8, logoHeight - (int) bottom + logoHeader + (line) * (logoHeader+rowHeight), TextDrawingLayout.Left,TextDrawingLayout.Right, charHeight, posWidth/4, mycolor.getColor(c.charAt(0)), c, g);
+					// draws the current character
+				}
 				
 				bottom = top;
 			}
