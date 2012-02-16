@@ -205,6 +205,7 @@ public class OptionsPane extends JPanel {
 		btLoadFile = new JButton("Load a file");
 		btLoadFile.addActionListener(new buttonSelectFile())   ;
 		btExport = new JButton("Export JPG fle");
+		btExport.addActionListener(new buttonExportFile())   ;
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(5, 5, 5, 5);
@@ -339,11 +340,45 @@ public class OptionsPane extends JPanel {
 			iFile.setDialogType(JFileChooser.OPEN_DIALOG);
 			iFile.setFileFilter(fastaFilter);
 			iFile.showOpenDialog(OptionsPane.this);
-
+			
+			parent.eraseBufferedImage();
+			
 			OptionsPane.this.selectFile(iFile.getSelectedFile(), true);
+			
+		}
+		
+	}
+	
+	private class buttonExportFile implements ActionListener {
+		 
+		@Override public void actionPerformed(ActionEvent e) {
+			
+			if (parent.hasAValidBufferedImage()) {
+			
+					FileFilter jpgFilter = new FileFilter() {
+						@Override public String getDescription() { return "JPG files"; }
+						@Override public boolean accept(File f) { return f.isDirectory() || f.getName().toLowerCase().endsWith("jpg"); }
+					}; 
+					
+					JFileChooser iFile = new JFileChooser(new java.io.File( "." ));
+					
+					iFile.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					iFile.setMultiSelectionEnabled(false);
+					iFile.setDialogTitle("Select a file to save the Logo Image");
+					iFile.setDialogType(JFileChooser.SAVE_DIALOG);
+					iFile.setFileFilter(jpgFilter);
+					iFile.showOpenDialog(OptionsPane.this);
+		
+					if (iFile.getSelectedFile()!=null) {
+						OptionsPane.this.parent.exportJpg(iFile.getSelectedFile().getAbsolutePath());
+					}
+					
+					
+			}
 
 		}
 		
 	}
+
 	
 }

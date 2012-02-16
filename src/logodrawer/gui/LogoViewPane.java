@@ -22,18 +22,25 @@ public class LogoViewPane extends JPanel {
 	public void setBi(BufferedImage bi) {
 		
 		this.bi = bi;
-		this.setPreferredSize( new Dimension(bi.getWidth(),bi.getHeight()));
+		if (bi!=null) {
+			this.setPreferredSize( new Dimension(bi.getWidth(),bi.getHeight()));
+		}
 		this.updateUI();
 		
 	}
 
-	//////////////////
-	// Private Methods
-	
 	public void paint(Graphics g) {
 		super.paint(g);
 		g.drawImage((Image) bi, 0, 0, null);
 
+	}
+
+	
+	//////////////////
+	// Protected Methods
+
+	protected BufferedImage getBi() {
+		return this.bi;
 	}
 	
 

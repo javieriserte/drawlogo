@@ -144,7 +144,7 @@ public abstract class LogoDrawer {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	protected void 				exportJPG							(File outfile, BufferedImage bi) throws FileNotFoundException, IOException {
+	public void 				exportJPG							(File outfile, BufferedImage bi) throws FileNotFoundException, IOException {
 		FileOutputStream out = new FileOutputStream(outfile);
 			// Creates an Output Stream for the speficied file.
 		JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);

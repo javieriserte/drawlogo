@@ -1,13 +1,17 @@
 package logodrawer.gui;
 
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -54,6 +58,25 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 		this.sequences = sequences;
 	}
 	
+	public void exportJpg(String outfilepath) {
+		if (this.drawer!=null) {
+			try {
+				this.drawer.exportJPG(new File(outfilepath), this.topPane.getBi());
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public boolean hasAValidBufferedImage() {
+		return this.topPane.getBi()!=null;
+	}
+	
+	protected void eraseBufferedImage() {
+		this.topPane.setBi(null);
+	}
 	
 	//////////////////
 	// Private Methods
@@ -88,25 +111,29 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 	
 	protected void drawLogo() {
 
-		RenderingHints renderingHints = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-		renderingHints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
-		renderingHints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY ));
-		renderingHints.add(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON ));
-		renderingHints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
-
-		LogoImageLayout layout = new LogoImageLayout();		
-		layout.setFont(bottomPane.getFont());
-		layout.setLogoHeader(bottomPane.getLogoHeaderSize());
-		layout.setLogoHeight(bottomPane.getLogoHeightSize());
-		layout.setPositionsPerLine(bottomPane.getPositionsPerLine());
-		layout.setPosWidth(bottomPane.getPosWidthSize());
-		layout.setRenderingHints(renderingHints);
-		layout.setRowHeight(bottomPane.getRowHeightSize());
-		layout.setRulerColumn(bottomPane.getRulerColumnSize());
-
-		topPane.setBi(this.drawer.drawLogo(this.sequences,layout));
+		if (this.sequences!=null) {
 		
+			RenderingHints renderingHints = new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+			renderingHints.add(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+			renderingHints.add(new RenderingHints(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY ));
+			renderingHints.add(new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON ));
+			renderingHints.add(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+	
+			LogoImageLayout layout = new LogoImageLayout();		
+			layout.setFont(bottomPane.getFont());
+			layout.setLogoHeader(bottomPane.getLogoHeaderSize());
+			layout.setLogoHeight(bottomPane.getLogoHeightSize());
+			layout.setPositionsPerLine(bottomPane.getPositionsPerLine());
+			layout.setPosWidth(bottomPane.getPosWidthSize());
+			layout.setRenderingHints(renderingHints);
+			layout.setRowHeight(bottomPane.getRowHeightSize());
+			layout.setRulerColumn(bottomPane.getRulerColumnSize());
+	
+			topPane.setBi(this.drawer.drawLogo(this.sequences,layout));
 		
+		} else {
+			JOptionPane.showMessageDialog(this, "No File Selected");
+		}
 	}
 	
 	public void selectLogoDrawer(MoleculeType type) {
