@@ -27,11 +27,11 @@ public abstract class LogoDrawer {
 	public abstract int getAlphabetSize();
 	public abstract ColorStrategy getColorStrategy();
 	
-	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout)  {
+	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout, boolean countGaps)  {
 		
 		LogoCalculator lc = new LogoCalculator();
 		
-		List<PositionValues> calculateValues = lc.calculateValues(this.getAlphabetSize(), sequences );
+		List<PositionValues> calculateValues = lc.calculateValues(this.getAlphabetSize(), sequences , countGaps);
 		
 		return this.createImage(calculateValues, this.getColorStrategy(),layout);
 		

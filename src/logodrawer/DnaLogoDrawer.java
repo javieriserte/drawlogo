@@ -49,7 +49,7 @@ public class DnaLogoDrawer extends LogoDrawer{
 		layout.setRowHeight(320);
 		layout.setRulerColumn(15);
 
-		BufferedImage createImage = dld.drawLogo(s,layout);
+		BufferedImage createImage = dld.drawLogo(s,layout,true);
 		
 		try {
 			dld.exportJPG( new File("c:\\logo.jpg"),  createImage);

@@ -9,10 +9,10 @@ public class LogoCalculator {
 	///////////////////
 	// Public Interface
 	
-	public List<PositionValues>                        calculateValues                 (int elemInAlphabet, List<String> sequences) {
+	public List<PositionValues>                        calculateValues                 (int elemInAlphabet, List<String> sequences, boolean countGaps) {
 		int numberOfSequences = sequences.size();
 		
-		List<PositionValues> frequencies = calculateFrequencies(elemInAlphabet, sequences, numberOfSequences);
+		List<PositionValues> frequencies = calculateFrequencies(elemInAlphabet, sequences, numberOfSequences, countGaps);
 		
 		for (int i=0; i<frequencies.size();i++) {
 			double[] vs = frequencies.get(i).getValues();
@@ -28,7 +28,7 @@ public class LogoCalculator {
     //////////////////
 	// Private Methods
 	
-	protected List<PositionValues>                     calculateFrequencies            (int numberOfElemInAlphabet, List<String> sequences, int numberOfSequences) {
+	protected List<PositionValues>                     calculateFrequencies            (int numberOfElemInAlphabet, List<String> sequences, int numberOfSequences, boolean countGaps) {
 		List<PositionValues> positionValues = new Vector<PositionValues>();
 		
 		// Note: gaps are ignored!
@@ -50,7 +50,7 @@ public class LogoCalculator {
 			
 			gapCount = absoluteCountOfChars(sequences, numberOfSequences, i, gapCount, freqsInSeq, alphabet);
 			
-			absoluteCountsToFrequencies(numberOfSequences, freqsInSeq, gapCount, false);
+			absoluteCountsToFrequencies(numberOfSequences, freqsInSeq, gapCount, countGaps);
 				// Convert AbsoluteNumbers to frequencies
 			
 			StringBuilder r = new StringBuilder();
@@ -101,7 +101,7 @@ public class LogoCalculator {
 			double[] freqsInSeq, int gapCount, boolean countGaps) {
 		
 		int gaps = 0;
-		if (countGaps) gaps = gapCount;
+		if (!countGaps) gaps = gapCount;
 		
 		for (int j=0;j<freqsInSeq.length;j++) freqsInSeq[j]=freqsInSeq[j]/(numberOfSequences-gaps);
 

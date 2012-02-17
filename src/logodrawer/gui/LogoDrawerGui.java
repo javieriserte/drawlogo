@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import fastaIO.FastaMultipleReader;
 import fastaIO.Pair;
 
+import logodrawer.DetectType;
 import logodrawer.DnaLogoDrawer;
 import logodrawer.LogoDrawer;
 import logodrawer.LogoImageLayout;
@@ -78,6 +79,15 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 		this.topPane.setBi(null);
 	}
 	
+	public void autodetect() {
+
+		if (DetectType.isProtein(this.sequences.get(0))) {
+				this.selectLogoDrawer(MoleculeType.Protein);
+			} else {
+				this.selectLogoDrawer(MoleculeType.DNA);
+			}
+		}
+	
 	//////////////////
 	// Private Methods
 	
@@ -109,7 +119,7 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 		
 	}
 	
-	protected void drawLogo() {
+	protected void drawLogo(boolean countGaps) {
 
 		if (this.sequences!=null) {
 		
@@ -129,7 +139,7 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 			layout.setRowHeight(bottomPane.getRowHeightSize());
 			layout.setRulerColumn(bottomPane.getRulerColumnSize());
 	
-			topPane.setBi(this.drawer.drawLogo(this.sequences,layout));
+			topPane.setBi(this.drawer.drawLogo(this.sequences,layout, countGaps));
 		
 		} else {
 			JOptionPane.showMessageDialog(this, "No File Selected");

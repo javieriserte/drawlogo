@@ -12,7 +12,10 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -57,6 +60,9 @@ public class OptionsPane extends JPanel {
 	JTextField 		txtList;
 	JButton			btFontSelect;
 	JLabel			jlFileSelected;
+	JCheckBox		jcCountGaps;
+	JCheckBox		jcAutodetectType;
+	JComboBox		jcbType;
 	
 	
 	JButton			btDraw;
@@ -141,18 +147,6 @@ public class OptionsPane extends JPanel {
 			}
 			
 			parent.setSequences(s);
-			
-			if (autodetectType) {
-				System.out.println(DetectType.isProtein(s.get(0)));
-				if (DetectType.isProtein(s.get(0))) {
-					parent.selectLogoDrawer(MoleculeType.Protein);
-				} else {
-					parent.selectLogoDrawer(MoleculeType.DNA);
-				}
-			}
-			
-//			DnaLogoDrawer dld = new DnaLogoDrawer();//
-//			
 			
 		}
 	}
@@ -289,11 +283,32 @@ public class OptionsPane extends JPanel {
 		c.gridx = 3; c.gridy = 2;
 		rightPane.add(btFontSelect,c);
 		
+		c.gridx = 4; c.gridy = 2;
+		rightPane.add(new JLabel("Count Gaps"),c);
+		jcCountGaps = new JCheckBox();
+		c.gridx = 5; c.gridy = 2;
+		rightPane.add(jcCountGaps,c);
+		
 		c.gridx = 0; c.gridy = 3;
 		rightPane.add(new JLabel("Loaded File:"),c);
 		jlFileSelected = new JLabel("None");
 		c.gridx = 1; c.gridy = 3;
 		rightPane.add(jlFileSelected ,c);
+
+		c.gridx = 2; c.gridy = 3;
+		rightPane.add(new JLabel("Molecule Type:"),c);
+		
+		DefaultComboBoxModel model = new DefaultComboBoxModel(new MoleculeType[]{MoleculeType.DNA,MoleculeType.Protein});
+		jcbType = new JComboBox(model);
+		c.gridx = 3; c.gridy = 3;
+		rightPane.add(jcbType ,c);
+
+		c.gridx = 4; c.gridy = 3;
+		rightPane.add(new JLabel("Autodetect Type:"),c);
+		jcAutodetectType = new JCheckBox("",true);
+		c.gridx = 5; c.gridy = 3;
+		rightPane.add(jcAutodetectType,c);
+		
 		
 		return rightPane;
 	}
@@ -316,7 +331,15 @@ public class OptionsPane extends JPanel {
 	private class buttonDrawLogoListener implements ActionListener {
 
 		@Override public void actionPerformed(ActionEvent e) {
-			parent.drawLogo();
+			
+			if (jcAutodetectType.isSelected()) {
+				OptionsPane.this.parent.autodetect();
+			} else {
+				OptionsPane.this.parent.selectLogoDrawer((MoleculeType) jcbType.getSelectedItem());
+			}
+			
+			parent.drawLogo(OptionsPane.this.jcCountGaps.isSelected());
+			
 		}
 	}
 	
@@ -329,8 +352,6 @@ public class OptionsPane extends JPanel {
 				@Override public boolean accept(File f) { return f.isDirectory() || (new FastaFilter()).accept(f); }
 			}; 
 				// Creates a filter to choose only fasta files.
-			
-
 			
 			JFileChooser iFile = new JFileChooser(new java.io.File( "." ));
 			
