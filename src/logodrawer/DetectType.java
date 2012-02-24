@@ -1,15 +1,19 @@
 package logodrawer;
 
-import java.io.File;
 
 public class DetectType {
 
 	///////////////////
 	// class variables
+	
+	@SuppressWarnings("unused")
 	private static final String DNA_alphabet = "ACTG-"; 
+	@SuppressWarnings("unused")
 	private static final String degDNA_alphabet = "ACTGRYWSKMVDHBN-";
+	@SuppressWarnings("unused")
 	private static final String protein_alphabet = "QWERTYIPASDFGHKLCVNMX-";
 	private static final String exclusive_protein_alphabet = "QEIPFLX";
+	@SuppressWarnings("unused")
 	private static final String excluded = "UOJZ";
 	
 	////////////////////
