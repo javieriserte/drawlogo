@@ -80,7 +80,7 @@ public class FontChooser extends javax.swing.JDialog {
 	private 							FontChooser					(JFrame frame, FontContainer result, String sampleText) {
 		super(frame);
 		this.result = result;
-		this.sampleText = sampleText;
+		FontChooser.sampleText = sampleText;
 		this.createGUI();
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
 	}
@@ -132,7 +132,7 @@ public class FontChooser extends javax.swing.JDialog {
 			this.currentFont = this.getFontFromSelectedValues();
 			
 			
-			jtpSampleText = new JTextArea(this.sampleText);
+			jtpSampleText = new JTextArea(FontChooser.sampleText);
 			this.redrawSampleText();
 			JScrollPane jspSampleText = new JScrollPane(jtpSampleText);
 			jspSampleText.setLocation(10, 75);

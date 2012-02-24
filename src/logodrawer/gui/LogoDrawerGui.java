@@ -1,24 +1,15 @@
 package logodrawer.gui;
 
-import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Vector;
-
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
-
-import fastaIO.FastaMultipleReader;
-import fastaIO.Pair;
 
 import logodrawer.DetectType;
 import logodrawer.DnaLogoDrawer;

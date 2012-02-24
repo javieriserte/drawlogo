@@ -1,6 +1,5 @@
 package logodrawer.gui;
 
-import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,15 +20,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.plaf.metal.MetalBorders.OptionDialogBorder;
-
 import fastaIO.FastaFilter;
 import fastaIO.FastaMultipleReader;
 import fastaIO.Pair;
 
-import logodrawer.DetectType;
 import logodrawer.LogoImageLayout;
-import logodrawer.PositionValues;
 
 
 public class OptionsPane extends JPanel {
