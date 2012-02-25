@@ -27,6 +27,31 @@ public abstract class LogoDrawer {
 	public abstract int getAlphabetSize();
 	public abstract ColorStrategy getColorStrategy();
 	
+	
+	//////////////////////////
+	// Public Class Interface
+	
+	public static LogoDrawer LogoDrawerFor(MoleculeType mt) {
+		LogoDrawer result=null;
+		switch (mt) {
+		case DNA:
+			result = new DnaLogoDrawer();
+			break;
+
+		case Protein:
+			result = new ProteinLogoDrawer();
+			break;
+			
+		default:
+			
+			break;
+		}
+		
+		return result;
+	}
+	
+	////////////////////
+	// Public Interface
 	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout, boolean countGaps)  {
 		
 		LogoCalculator lc = new LogoCalculator();

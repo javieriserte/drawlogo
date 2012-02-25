@@ -25,6 +25,7 @@ import fastaIO.FastaMultipleReader;
 import fastaIO.Pair;
 
 import logodrawer.LogoImageLayout;
+import logodrawer.MoleculeType;
 
 
 public class OptionsPane extends JPanel {

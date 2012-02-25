@@ -15,6 +15,7 @@ import logodrawer.DetectType;
 import logodrawer.DnaLogoDrawer;
 import logodrawer.LogoDrawer;
 import logodrawer.LogoImageLayout;
+import logodrawer.MoleculeType;
 import logodrawer.ProteinLogoDrawer;
 
 public class LogoDrawerGui extends javax.swing.JFrame{

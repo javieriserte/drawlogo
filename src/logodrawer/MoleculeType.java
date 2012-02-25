@@ -1,4 +1,4 @@
-package logodrawer.gui;
+package logodrawer;
 
 public enum MoleculeType {
 	DNA, 
