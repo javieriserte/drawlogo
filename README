@@ -1,0 +1,41 @@
+-----------------------------------------------
+drawLogo - A Sequence Logo drawing application 
+-----------------------------------------------
+Date: Mar 1st, 2012.
+
+Released under the terms of the General Public License Version 3 (GPL v3)
+See the file LICENCE for details.
+
+General
+-------
+A simple application to draw sequence logos for DNA and protein alignments.
+According to the publication:
+    Schneider TD, Stephens RM. 1990. Sequence Logos: A New Way to Display Consensus Sequences. Nucleic Acids Res. 18:6097-6100
+
+Authors
+-------
+	Javier A. Iserte. <jiserte@unq.edu.ar>
+
+Requisites
+----------
+JUnit (3.8.2) - http://sourceforge.net/projects/junit.
+JUnit is used to run tests only. 
+
+Documentation
+-------------
+Command Line manual provided in 'MANUAL' file.
+
+Package contents
+----------------
+  /src/                   : Code source files.
+  /bin/                   : Compiled classes.
+  LICENCE                 : GPL v3 license terms.
+  CHANGES                 : Log with version modifications.
+  TO_DO                   : Modifications of future versions.
+  VERSION                 : Version Log.
+  README                  : This file.
+  MANUAL                  : Command line Reference Manual.
+  
+Bug report
+----------
+	Please send a mail to Javier Iserte <jiserte@unq.edu.ar> including the details of bugs.

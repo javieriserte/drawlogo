@@ -1,0 +1,60 @@
+LogoDrawer Help.
+LogoDrawer is a simple utility to draw Sequences Logos as decribes in :
+Schneider TD, Stephens RM. 1990. Sequence Logos: A New Way to Display Consensus Sequences. Nucleic Acids Res. 18:6097-6100 
+
+Usage: 
+       java -jar logoDrawercli.jar
+         Goes to Graphic User Interface
+
+       java -jar logoDrawercli.jar options
+         Runs command line interpreter
+         
+Options:
+       --infile filepath 
+         Reads sequences from the specified filepath. Data is expected to be in fasta format.
+         if --infile is not present then the data is readed from standard input.
+
+       --outfile filepath 
+         Specifies the destination jpg file with the image.
+
+       --type moltype
+         Specifies if sequences are from DNA or Proteins, moltype can be (without the quotes):
+         \"d\" or \"DNA\"         for DNA sequences.
+         \"p\" or \"Protein\"     for Protein Sequences.
+         If --type is not present, then the type is autodetected.
+       
+       --NoCountGaps
+         If --NoCountGaps options is present, then the gaps are ignored to estimate frequencies. This result in a higher logo in the positions with gaps.
+         By default gaps are taken into account to estimate frequencies.
+         
+       --font [font name, font style]
+         By default, verdana plain font is used to draw the logos.
+         The font name can be any font installed in your system.
+         The font style is a number that specifies the style:
+           Plain        : 0.
+           Bold         : 1.
+           Italics      : 2.
+           Bold+Italics : 3.
+         The \"[\" and \"]\" symbols must be present.
+
+       --layout LogoHeader, LogoHeight, PositionsPerLine, PosWidth, RowHeight, RulerColumn 
+         Are integers that define the layout drawing of the Sequence Logo.
+         Where:
+           LogoHeader: is the number of pixels from the top of the row to the beginning of the Logo.
+           LogoHeight: is the number of pixels from of the Logo.
+           PositionsPerLine: is the number of positions of the sequence Logo that are shown in a single line.
+           PosWidth: is the number os pixels of the width of each character in the logo.
+           RowHeight: is the number of pixels of the entire row. It includes the Logo Header, the Sequence Logo itself and the horizontal Ruler.
+           RulerColumn: is the number of pixels from the left to the beginning of the Sequence Logo. This part is used to draw the Vertical Ruler.
+         The default values are 8, 300, 20, 45, 320, 15.
+
+       --help
+         Shows this help.
+
+Example:
+       java -jar logoDrawerCli.jar --outfile image.jpg --infile Nuc.fas
+       cat nuc.fas | java -jar logoDrawerCli.jar --outfile image.jpg 
+       java -jar logoDrawerCli.jar --outfile image.jpg --infile Nuc.fas --type protein
+       java -jar logoDrawerCli.jar --outfile image.jpg --infile Nuc.fas --font [times new roman,3]
+       java -jar logoDrawerCli.jar --outfile image.jpg --infile Nuc.fas --NoCountGaps
+       java -jar logoDrawerCli.jar --outfile image.jpg --infile Nuc.fas --NoCountGaps -- layout 8, 300, 20, 45, 350, 45
