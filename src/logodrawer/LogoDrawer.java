@@ -89,7 +89,7 @@ public abstract class LogoDrawer {
 				layout.getPosWidth(), layout.getRulerColumn(), layout.getPositionsPerLine(), g, maxBits);
 		
 		int labelValues[] = new int[list.size()];
-		for (int i = 0; i < labelValues.length; i++) labelValues[i]=i; 
+		for (int i = 0; i < labelValues.length; i++) labelValues[i]=i+1; 
 
 		int[] verticalLabels = new int[(int) maxBits + 1];
 		for (int i = 0; i < verticalLabels.length; i++) {

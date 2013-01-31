@@ -4,4 +4,7 @@ CHANGE LOG
 
 #Mar 1st, 2012.
 	Ver 1.1.1 : First Versioned Release.
-	
+
+#Jan 31th, 2013.
+	Ver 1.1.2 : Now, the numeration of the horizontal ruler starts with 1 instead of 0.	
+	            Version number added to the help.
