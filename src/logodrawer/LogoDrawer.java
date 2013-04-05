@@ -21,7 +21,6 @@ import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
-@SuppressWarnings("restriction")
 public abstract class LogoDrawer {
 
 	public abstract int getAlphabetSize();

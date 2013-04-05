@@ -35,35 +35,35 @@ public class OptionsPane extends JPanel {
 
 	/////////////////////////////
 	// Private Instance Variables
-	LogoImageLayout layout;
-	Font			selectedFont;
-	LogoDrawerGui   parent;
-	File			selectedFile;
+	LogoImageLayout 			layout;
+	Font						selectedFont;
+	LogoDrawerGui  			 	parent;
+	File						selectedFile;
 	
 	/////////////
 	// Components
 	
-	JPanel 			leftPane;
-	JPanel			rightPane;
+	JPanel 						leftPane;
+	JPanel						rightPane;
 	
-	JTextField 		txtLogoHeader;
-	JTextField 		txtLogoHeight;
-	JTextField 		txtRowHeight;
-	JTextField 		txtRightSpacer;
-	JTextField 		txtPosWidth;
-	JTextField 		txtRulerColumn;
-	JTextField 		txtPositionsPerLine;
-	JTextField 		txtList;
-	JButton			btFontSelect;
-	JLabel			jlFileSelected;
-	JCheckBox		jcCountGaps;
-	JCheckBox		jcAutodetectType;
-	JComboBox		jcbType;
+	JTextField 					txtLogoHeader;
+	JTextField 					txtLogoHeight;
+	JTextField 					txtRowHeight;
+	JTextField 					txtRightSpacer;
+	JTextField 					txtPosWidth;
+	JTextField 					txtRulerColumn;
+	JTextField 					txtPositionsPerLine;
+	JTextField 					txtList;
+	JButton						btFontSelect;
+	JLabel						jlFileSelected;
+	JCheckBox					jcCountGaps;
+	JCheckBox					jcAutodetectType;
+	JComboBox<MoleculeType>		jcbType;
 	
 	
-	JButton			btDraw;
-	JButton			btLoadFile;
-	JButton			btExport;
+	JButton						btDraw;
+	JButton						btLoadFile;
+	JButton						btExport;
 	
 	//////////////
 	// Constructor
@@ -294,8 +294,8 @@ public class OptionsPane extends JPanel {
 		c.gridx = 2; c.gridy = 3;
 		rightPane.add(new JLabel("Molecule Type:"),c);
 		
-		DefaultComboBoxModel model = new DefaultComboBoxModel(new MoleculeType[]{MoleculeType.DNA,MoleculeType.Protein});
-		jcbType = new JComboBox(model);
+		DefaultComboBoxModel<MoleculeType> model = new DefaultComboBoxModel<MoleculeType>(new MoleculeType[]{MoleculeType.DNA,MoleculeType.Protein});
+		jcbType = new JComboBox<MoleculeType>(model);
 		c.gridx = 3; c.gridy = 3;
 		rightPane.add(jcbType ,c);
 
