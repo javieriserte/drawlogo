@@ -31,8 +31,8 @@ public class FontChooser extends javax.swing.JDialog {
 	
 	/////////////
 	// Components
-	private JComboBox<String> jcbFontName;
-	private JComboBox<String> jcbFontStyle;
+	private JComboBox jcbFontName;
+	private JComboBox jcbFontStyle;
 	private JSpinner  jsFontSize;
 	private JTextArea jtpSampleText;
 	private JButton   jbOK;
@@ -108,12 +108,12 @@ public class FontChooser extends javax.swing.JDialog {
 			jbCancel.getInsets().set(0, 0, 0, 0);
 			jbCancel.addActionListener(new CancelButtonPressed());
 			
-			jcbFontName = new JComboBox<String>(this.getSystemFontNames());
+			jcbFontName = new JComboBox(this.getSystemFontNames());
 			jcbFontName.setLocation(10, 5);
 			jcbFontName.setSize(190, 27);
 			jcbFontName.addActionListener(fl);
 			
-			jcbFontStyle = new JComboBox<String>(new String[] {"Plain","Bold","Italic","Bold Italic"});
+			jcbFontStyle = new JComboBox(new String[] {"Plain","Bold","Italic","Bold Italic"});
 			jcbFontStyle.setLocation(10, 40);
 			jcbFontStyle.setSize(90,27);
 			jcbFontStyle.addActionListener(fl);

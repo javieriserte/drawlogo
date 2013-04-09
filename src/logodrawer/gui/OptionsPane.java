@@ -58,7 +58,7 @@ public class OptionsPane extends JPanel {
 	JLabel						jlFileSelected;
 	JCheckBox					jcCountGaps;
 	JCheckBox					jcAutodetectType;
-	JComboBox<MoleculeType>		jcbType;
+	JComboBox           		jcbType;
 	
 	
 	JButton						btDraw;
@@ -294,8 +294,8 @@ public class OptionsPane extends JPanel {
 		c.gridx = 2; c.gridy = 3;
 		rightPane.add(new JLabel("Molecule Type:"),c);
 		
-		DefaultComboBoxModel<MoleculeType> model = new DefaultComboBoxModel<MoleculeType>(new MoleculeType[]{MoleculeType.DNA,MoleculeType.Protein});
-		jcbType = new JComboBox<MoleculeType>(model);
+		DefaultComboBoxModel model = new DefaultComboBoxModel(new MoleculeType[]{MoleculeType.DNA,MoleculeType.Protein});
+		jcbType = new JComboBox(model);
 		c.gridx = 3; c.gridy = 3;
 		rightPane.add(jcbType ,c);
 
