@@ -21,7 +21,7 @@ public class ProteinColorStrategy extends ColorStrategy{
 		case 'Y': result = new Color(50,50,170); break;
 		case 'N': result = new Color(0,220,220); break; 
 		case 'Q': result = new Color(0,220,220); break;
-		case 'G': result = new Color(235,235,235); break;
+		case 'G': result = new Color(200,200,200); break;
 		case 'L': result = new Color(15,130,15); break; 
 		case 'V': result = new Color(15,130,15); break; 
 		case 'I': result = new Color(15,130,15); break;

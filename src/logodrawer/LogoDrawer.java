@@ -17,9 +17,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 
 public abstract class LogoDrawer {
 
@@ -169,17 +171,33 @@ public abstract class LogoDrawer {
 	 * @throws IOException
 	 */
 	public void 				exportJPG							(File outfile, BufferedImage bi) throws FileNotFoundException, IOException {
-		FileOutputStream out = new FileOutputStream(outfile);
+//		FileOutputStream out = new FileOutputStream(outfile);
 			// Creates an Output Stream for the speficied file.
-		JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+//		JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
 			// Set the outout Stream to the Jpg codec.
-		JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(bi);
+//		JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(bi);
 			// Creates the encoder for the current image
-		param.setQuality(0.95f, false);
+//		param.setQuality(0.95f, false);
 			// Sets the quality of the image.
-		encoder.setJPEGEncodeParam(param);
+//		encoder.setJPEGEncodeParam(param);
 			// 
-		encoder.encode(bi);
+//		encoder.encode(bi);
+		
+		
+		FileOutputStream out = new FileOutputStream(outfile);
+		
+		ImageWriter imagewriter = ImageIO.getImageWritersByFormatName("png").next();
+		
+		ImageWriteParam writerparam = imagewriter.getDefaultWriteParam();
+		
+		ImageOutputStream ios = ImageIO.createImageOutputStream(out);
+		
+		imagewriter.setOutput(ios);
+		
+		imagewriter.write(null, new IIOImage(bi, null, null), writerparam);
+		
+		imagewriter.dispose();
+		
 	}
 	
 	/**
