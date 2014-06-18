@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -16,6 +17,7 @@ import logodrawer.DnaLogoDrawer;
 import logodrawer.LogoDrawer;
 import logodrawer.LogoImageLayout;
 import logodrawer.MoleculeType;
+import logodrawer.NumericColumnLabeler;
 import logodrawer.ProteinLogoDrawer;
 
 public class LogoDrawerGui extends javax.swing.JFrame{
@@ -54,7 +56,7 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 	public void exportJpg(String outfilepath) {
 		if (this.drawer!=null) {
 			try {
-				this.drawer.exportJPG(new File(outfilepath), this.topPane.getBi());
+				this.drawer.exportPNG(new File(outfilepath), this.topPane.getBi());
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -131,7 +133,7 @@ public class LogoDrawerGui extends javax.swing.JFrame{
 			layout.setRowHeight(bottomPane.getRowHeightSize());
 			layout.setRulerColumn(bottomPane.getRulerColumnSize());
 	
-			topPane.setBi(this.drawer.drawLogo(this.sequences,layout, countGaps));
+			topPane.setBi(this.drawer.drawLogo(this.sequences,layout, countGaps, new NumericColumnLabeler(1)));
 		
 		} else {
 			JOptionPane.showMessageDialog(this, "No File Selected");

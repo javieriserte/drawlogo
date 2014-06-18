@@ -12,12 +12,13 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Vector;
 
+import logodrawer.ColumnLabeler;
 import logodrawer.DetectType;
 import logodrawer.LogoDrawer;
 import logodrawer.LogoImageLayout;
 import logodrawer.MoleculeType;
+import logodrawer.NumericColumnLabeler;
 import logodrawer.gui.LogoDrawerGui;
-
 import cmdGA.MultipleOption;
 import cmdGA.NoOption;
 import cmdGA.Parser;
@@ -46,6 +47,8 @@ public class LogoDrawerCli {
 		
 		SingleOption molType = new SingleOption(parser, null, "--type", MoleculeTypeParameter.getParameter());
 		
+		SingleOption labelOpt = new SingleOption(parser, new NumericColumnLabeler(1), "--labels", ColumnLabelerParameter.getParameter());
+		
 		NoOption countGaps = new NoOption(parser, "--NoCountGaps");
 		
 		NoOption help = new NoOption(parser, "--help");
@@ -68,6 +71,7 @@ public class LogoDrawerCli {
 			return;
 		}
 		
+		ColumnLabeler columnLabeler = (ColumnLabeler) labelOpt.getValue();
 		
 		List<String> s = new Vector<String>();
 		
@@ -118,10 +122,10 @@ public class LogoDrawerCli {
 			layout.setRowHeight((Integer) layoutOpt.getValue(4));
 			layout.setRulerColumn((Integer) layoutOpt.getValue(5));
 			
-			BufferedImage createImage = dld.drawLogo(s,layout,!countGaps.getValue());
+			BufferedImage createImage = dld.drawLogo(s,layout,!countGaps.getValue(), columnLabeler);
 		
 			try {
-				dld.exportJPG( (File) outFile.getValue(), createImage);
+				dld.exportPNG( (File) outFile.getValue(), createImage);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

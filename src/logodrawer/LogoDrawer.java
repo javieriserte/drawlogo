@@ -53,18 +53,18 @@ public abstract class LogoDrawer {
 	
 	////////////////////
 	// Public Interface
-	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout, boolean countGaps)  {
+	public BufferedImage drawLogo(List<String> sequences, LogoImageLayout layout, boolean countGaps, ColumnLabeler columnLabeler)  {
 		
 		LogoCalculator lc = new LogoCalculator();
 		
 		List<PositionValues> calculateValues = lc.calculateValues(this.getAlphabetSize(), sequences , countGaps);
 		
-		return this.createImage(calculateValues, this.getColorStrategy(),layout);
+		return this.createImage(calculateValues, this.getColorStrategy(),layout, columnLabeler);
 		
 	}
 	
 	
-	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, LogoImageLayout layout ) {
+	protected BufferedImage 	createImage							(List<PositionValues> list, ColorStrategy mycolor, LogoImageLayout layout, ColumnLabeler columnLabeler ) {
 
 		
 		/////////////////////
@@ -89,9 +89,6 @@ public abstract class LogoDrawer {
 		drawLogoChars(list, mycolor, layout.getLogoHeader(), layout.getLogoHeight(), layout.getRowHeight(),
 				layout.getPosWidth(), layout.getRulerColumn(), layout.getPositionsPerLine(), g, maxBits);
 		
-		int labelValues[] = new int[list.size()];
-		for (int i = 0; i < labelValues.length; i++) labelValues[i]=i; 
-
 		int[] verticalLabels = new int[(int) maxBits + 1];
 		for (int i = 0; i < verticalLabels.length; i++) {
 			verticalLabels[i]=i;
@@ -99,7 +96,12 @@ public abstract class LogoDrawer {
 		
 		for (int l = 0; l< layout.getLines();l++) {
 
-			this.drawHorizotalRuler(layout.getRulerColumn(), (layout.getRowHeight()+ layout.getLogoHeader())*(l+1),layout.getRulerHeight(),labelValues,l*layout.getPositionsPerLine() ,Math.min((l+1)*layout.getPositionsPerLine(),layout.getNumberOfPositions())-1,layout.getPosWidth(),2,4,Color.BLACK,new Font("Verdana", Font.BOLD, 10),g,layout.getPositionsPerLine());
+			this.drawHorizotalRuler(layout.getRulerColumn(), (layout.getRowHeight()+ layout.getLogoHeader())*(l+1),
+					layout.getRulerHeight(),l*layout.getPositionsPerLine() ,
+					Math.min((l+1)*layout.getPositionsPerLine(),layout.getNumberOfPositions())-1,
+					layout.getPosWidth(),2,4,Color.BLACK,new Font("Verdana", Font.BOLD, 10), 
+					g, layout.getPositionsPerLine(),columnLabeler);
+
 			this.drawVerticalRuler((layout.getRowHeight()+ layout.getLogoHeader())*l + (layout.getLogoHeight()+ layout.getLogoHeader()), (layout.getRowHeight()+ layout.getLogoHeader())*l + layout.getLogoHeader(),verticalLabels,maxBits,4,2,layout.getRulerColumn(), Color.black, new Font("Verdana",Font.BOLD, 10), g);
 			
 		}
@@ -170,7 +172,7 @@ public abstract class LogoDrawer {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public void 				exportJPG							(File outfile, BufferedImage bi) throws FileNotFoundException, IOException {
+	public void 				exportPNG							(File outfile, BufferedImage bi) throws FileNotFoundException, IOException {
 //		FileOutputStream out = new FileOutputStream(outfile);
 			// Creates an Output Stream for the speficied file.
 //		JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
@@ -312,9 +314,10 @@ public abstract class LogoDrawer {
 	    	// returns the path as a Shape
 	}
 	
-	protected void 				drawHorizotalRuler					(int left, int bottom, int rulerHeight, int values[], int from, int to,
+	protected void 				drawHorizotalRuler					(int left, int bottom, int rulerHeight, int from, int to,
 			                                                         int widthPosition , int lineWidht, int markHeight, 
-			                                                         Color color, Font font, Graphics2D g, int positionsPerLine) {
+			                                                         Color color, Font font, Graphics2D g, int positionsPerLine,
+			                                                         ColumnLabeler columnLabeler) {
 		///////////////////
 		// Store old values
 		
@@ -344,7 +347,9 @@ public abstract class LogoDrawer {
 		for (int i= from;i<=to; i++ ) {
 			g.drawLine(left + widthPosition * (i-from) + widthPosition/2, bottom - rulerHeight, left + widthPosition * (i-from) + widthPosition/2, bottom - rulerHeight + markHeight);
 				// Draws each vertical mark line
-			String strValue = String.valueOf(values[i]);
+			
+			String strValue = columnLabeler.label(i);
+
 			this.drawCharEx(left + widthPosition * (i-from) + widthPosition/2 , bottom - ( rulerHeight - markHeight)/2 , TextDrawingLayout.Center,TextDrawingLayout.Center,0,0,color,strValue,g);
 				// Draws the value of each mark 
 		}
