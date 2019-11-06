@@ -55,7 +55,7 @@ public class LogoDrawerCli {
 		
 		
 		Integer[] deflayout = new Integer[]{8, 300, 20, 45, 320, 15};
-		
+
 		MultipleOption layoutOpt = new MultipleOption(parser, deflayout, "--layout", ',', IntegerParameter.getParameter());
 		
 		try {
@@ -114,13 +114,17 @@ public class LogoDrawerCli {
 			
 			
 			layout.setFont((Font) font.getValue());
-			layout.setLogoHeader((Integer) layoutOpt.getValue(0));
-			layout.setLogoHeight((Integer) layoutOpt.getValue(1));
-			layout.setPositionsPerLine((Integer) layoutOpt.getValue(2));
-			layout.setPosWidth((Integer) layoutOpt.getValue(3));
+			Object[] layoutValues = (Object[]) layoutOpt.getValues()[0];
+			if (layoutValues.length != 6) {
+				System.out.println("Wrong number of arguments for layout");
+			}
+			layout.setLogoHeader((Integer) (layoutValues[0]));
+			layout.setLogoHeight((Integer) layoutValues[1]);
+			layout.setPositionsPerLine((Integer) layoutValues[2]);
+			layout.setPosWidth((Integer) layoutValues[3]);
 			layout.setRenderingHints(renderingHints);
-			layout.setRowHeight((Integer) layoutOpt.getValue(4));
-			layout.setRulerColumn((Integer) layoutOpt.getValue(5));
+			layout.setRowHeight((Integer) layoutValues[4]);
+			layout.setRulerColumn((Integer) layoutValues[5]);
 			
 			BufferedImage createImage = dld.drawLogo(s,layout,!countGaps.getValue(), columnLabeler);
 		
